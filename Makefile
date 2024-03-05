@@ -1,8 +1,5 @@
 BUILD_DIR := build
 CMAKE := cmake
-QT_INCLUDE_DIR := /usr/include/x86_64-linux-gnu/qt5
-SRC := $(wildcard ../src/**/*.cpp)
-HEADER := $(wildcard ../src/**/*.h)
 
 .PHONY: build
 build:
