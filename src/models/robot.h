@@ -10,22 +10,30 @@ enum Direction {
     UP
 };
 
+enum RotationDirection {
+    CLOCKWISE,
+    ANTICLOCKWISE
+};
+
 class Robot{
 
     private:
         QPoint position;
         int speed;
         Direction dir = RIGHT;
-        // rotation direction
+        RotationDirection rot_dir = CLOCKWISE;
         // angle
     
     public:
+        Robot(QPoint r_position);
+        Robot(QPoint r_position, Direction r_dir, RotationDirection r_rot_dir);
         Robot(QPoint r_position, int r_speed, Direction r_dir);
+        
         void move();
         void rotate();
-        static int sum(int a, int b);
-
-
+        QPoint const get_position();
+        int const get_speed();
+        Direction const get_direction();
 };
 
 #endif
