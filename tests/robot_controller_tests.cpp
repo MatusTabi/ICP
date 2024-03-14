@@ -4,22 +4,22 @@ void RobotControllerTests::SetUp() {
     controller = RobotController();
 }
 
-TEST_F(RobotControllerTests, empty_initialization_test) {
+TEST_F(RobotControllerTests, EmptyInitialization_Test) {
     EXPECT_EQ(controller.get_robots().size(), 0);
     EXPECT_EQ(controller.get_walls().size(), 0);
 }
 
-TEST_F(RobotControllerTests, one_robot_insert_test) {
+TEST_F(RobotControllerTests, InsertOneRobot_Test) {
     controller.add_robot(new Robot(QPoint(0, 0)));
     EXPECT_EQ(controller.get_robots().size(), 1);
 }
 
-TEST_F(RobotControllerTests, one_wall_insert_test) {
+TEST_F(RobotControllerTests, InsertOneWall_Test) {
     controller.add_wall(new Wall(QPoint(0, 0), QPoint(10, 10)));
     EXPECT_EQ(controller.get_walls().size(), 1);
 }
 
-TEST_F(RobotControllerTests, robot_vector_insert_test) {
+TEST_F(RobotControllerTests, InsertRobotVector_Test) {
     std::vector<Robot *> robots = {
         new Robot(QPoint(0, 0)),
         new Robot(QPoint(10, 10))
@@ -28,7 +28,7 @@ TEST_F(RobotControllerTests, robot_vector_insert_test) {
     EXPECT_EQ(controller.get_robots().size(), 2);
 }
 
-TEST_F(RobotControllerTests, wall_vector_insert_test) {
+TEST_F(RobotControllerTests, InsertWallVector_Test) {
     std::vector<Wall *> walls = {
         new Wall(QPoint(0, 0)),
         new Wall(QPoint(100, 100))
@@ -61,7 +61,7 @@ TEST_F(RobotControllerTests, RobotsCollide_Test) {
     }
 }
 
-TEST_F(RobotControllerTests, moving_robots_test) {
+TEST_F(RobotControllerTests, MovingRobots_Test) {
     std::vector<QPoint> r_positions = {
         QPoint(0, 0),
         QPoint(100, 100),
