@@ -15,11 +15,22 @@ enum RotationDirection {
     ANTICLOCKWISE
 };
 
+enum RobotSpeed {
+    STOP,
+    NO_CHANGE,
+    SLOW,
+    MEDIUM = 5,
+    FAST = 10,
+    SUPERFAST = 50,
+};
+
 class Robot{
 
     private:
         QPoint position;
-        int speed;
+        const int size = 30;
+        RobotSpeed speed = RobotSpeed::SLOW;
+        int collision_distance = 40;
         Direction dir = RIGHT;
         RotationDirection rot_dir = CLOCKWISE;
         // angle
@@ -27,13 +38,20 @@ class Robot{
     public:
         Robot(QPoint r_position);
         Robot(QPoint r_position, Direction r_dir, RotationDirection r_rot_dir);
-        Robot(QPoint r_position, int r_speed, Direction r_dir);
+        Robot(QPoint r_position, RobotSpeed r_speed);
+        Robot(QPoint r_position, RobotSpeed r_speed, Direction r_dir);
         
         void move();
         void rotate();
+
         QPoint const get_position();
-        int const get_speed();
+        RobotSpeed const get_speed();
+        int const get_collision_distance();
         Direction const get_direction();
+
+        void set_speed(RobotSpeed r_speed);
+        void set_collision_distance(int r_coll_length);
+
 };
 
 #endif
