@@ -24,7 +24,7 @@ set(HEADERS
     ../tests/collision_tests.h
 )
 
-add_executable(tests ../run_tests.cpp ${SOURCES} ${HEADERS})
+add_executable(tests run_tests.cpp ${SOURCES} ${HEADERS})
 target_link_libraries(tests GTest::GTest GTest::Main)
 target_include_directories(tests PRIVATE /usr/include/x86_64-linux-gnu/qt5)
 target_link_libraries(tests Qt5::Widgets)
