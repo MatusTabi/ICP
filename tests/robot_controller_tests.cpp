@@ -36,3 +36,51 @@ TEST_F(RobotControllerTests, wall_vector_insert_test) {
     controller.add_wall_vector(walls);
     EXPECT_EQ(controller.get_walls().size(), 2);
 }
+
+TEST_F(RobotControllerTests, RobotsCollide_Test) {
+    std::vector<QPoint> r_positions = {
+        QPoint(0, 0),
+        QPoint(100, 100),
+        QPoint(50, 50)
+    };
+
+    std::vector<Robot *> robots = {
+        new Robot(r_positions[0]),
+        new Robot(r_positions[1]),
+        new Robot(r_positions[2])
+    };
+
+    controller.add_robot_vector(robots);
+    controller.move_robots(true);
+
+    for (int i = 0; i < robots.size(); ++i) {
+        QPoint position = robots[i]->get_position();
+        const RobotSpeed r_speed = robots[i]->get_speed();
+
+        EXPECT_EQ(position, QPoint(r_positions[i].x(), r_positions[i].y()));
+    }
+}
+
+TEST_F(RobotControllerTests, moving_robots_test) {
+    std::vector<QPoint> r_positions = {
+        QPoint(0, 0),
+        QPoint(100, 100),
+        QPoint(50, 50)
+    };
+
+    std::vector<Robot *> robots = {
+        new Robot(r_positions[0]),
+        new Robot(r_positions[1]),
+        new Robot(r_positions[2])
+    };
+
+    controller.add_robot_vector(robots);
+    controller.move_robots(false);
+
+    for (int i = 0; i < robots.size(); ++i) {
+        QPoint position = robots[i]->get_position();
+        const RobotSpeed r_speed = robots[i]->get_speed();
+
+        EXPECT_EQ(position, QPoint(r_positions[i].x() + r_speed, r_positions[i].y()));
+    }
+}
