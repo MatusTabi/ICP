@@ -6,8 +6,8 @@ void CollisionTests::SetUp() {
     controller = RobotController();
 }
 
-TEST_F(CollisionTests, no_collision_test) {
-    controller.add_robot(new Robot(QPoint(100, 100)));
+TEST_F(CollisionTests, NoCollision_Test) {
+    controller.add_robot(new Robot{100, 100});
     controller.change_speed(RobotSpeed::SUPERFAST);
     Robot *robot = controller.get_robots()[0];
 
@@ -26,10 +26,10 @@ TEST_F(CollisionTests, no_collision_test) {
     EXPECT_FALSE(collision);
 }
 
-TEST_F(CollisionTests, simple_collision_test) {
-    controller.add_robot(new Robot(QPoint(100, 100)));
+TEST_F(CollisionTests, SimpleCollision_Test) {
+    controller.add_robot(new Robot{100, 100});
     controller.change_speed(RobotSpeed::SUPERFAST);
-    controller.add_wall(new Wall(QPoint(190, 0), QPoint(60, 200)));
+    controller.add_wall(new Wall{190, 0, 60, 200});
     Robot *robot = controller.get_robots()[0];
 
     bool collision = controller.detect_collision();
@@ -42,9 +42,9 @@ TEST_F(CollisionTests, simple_collision_test) {
     EXPECT_EQ(robot->get_position(), QPoint(150, 100));
 }
 
-TEST_F(CollisionTests, collision_rotate_test) {
-    controller.add_robot(new Robot(QPoint(5, 5)));
-    controller.add_wall(new Wall(QPoint(QPoint(8, 0)), QPoint(1, 10)));
+TEST_F(CollisionTests, CollisionRotate_Test) {
+    controller.add_robot(new Robot{5, 5});
+    controller.add_wall(new Wall({8, 0, 1, 10}));
     Robot *robot = controller.get_robots()[0];
     robot->set_collision_distance(2);
 
@@ -62,5 +62,19 @@ TEST_F(CollisionTests, collision_rotate_test) {
     EXPECT_FALSE(collision);
     controller.move_robots(collision);
     EXPECT_EQ(robot->get_position(), QPoint(7, 7));
+    EXPECT_EQ(robot->get_direction(), Direction::DOWN);
+}
+
+TEST_F(CollisionTests, ImmediateCollision_Test) {
+    controller.add_robot(new Robot{5, 5});
+    controller.change_collision_distance(2);
+    controller.add_wall(new Wall{6, 5});
+    Robot *robot{controller.get_robots()[0]};
+
+    bool collision{controller.detect_collision()};
+    controller.move_robots(collision);
+
+
+    EXPECT_EQ(robot->get_position(), QPoint(5, 5));
     EXPECT_EQ(robot->get_direction(), Direction::DOWN);
 }
