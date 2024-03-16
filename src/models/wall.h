@@ -10,6 +10,8 @@ class Wall {
         Qt::GlobalColor color = Qt::red;
     
     public:
+        Wall(int x, int y);
+        Wall(int x, int y, int size_x, int size_y);
         Wall(QPoint w_position);
         Wall(QPoint w_position, QPoint w_size);
         Wall(QPoint w_position, QPoint w_size, Qt::GlobalColor w_color);

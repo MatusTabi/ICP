@@ -36,6 +36,7 @@ class Robot{
         // angle
     
     public:
+        Robot(int x, int y);
         Robot(QPoint r_position);
         Robot(QPoint r_position, Direction r_dir, RotationDirection r_rot_dir);
         Robot(QPoint r_position, RobotSpeed r_speed);

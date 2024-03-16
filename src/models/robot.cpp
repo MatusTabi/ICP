@@ -1,14 +1,16 @@
 #include "robot.h"
 
-Robot::Robot(QPoint r_position) : position(r_position) {}
+Robot::Robot(int x, int y) : position{x, y} {}
+
+Robot::Robot(QPoint r_position) : position{r_position} {}
 
 Robot::Robot(QPoint r_position, RobotSpeed r_speed, Direction r_dir) 
-    : position(r_position), speed(r_speed), dir(r_dir) {}
+    : position{r_position}, speed{r_speed}, dir{r_dir} {}
 
-Robot::Robot(QPoint r_position, RobotSpeed r_speed) : position(r_position), speed(r_speed) {}
+Robot::Robot(QPoint r_position, RobotSpeed r_speed) : position{r_position}, speed{r_speed} {}
 
 Robot::Robot(QPoint r_position, Direction r_dir, RotationDirection r_rot_dir)
-    : position(r_position), dir(r_dir), rot_dir(r_rot_dir) {}
+    : position{r_position}, dir{r_dir}, rot_dir{r_rot_dir} {}
 
 void Robot::move() {
     switch(dir) {

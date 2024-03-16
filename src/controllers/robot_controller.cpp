@@ -6,34 +6,39 @@ RobotController::RobotController() {}
 bool RobotController::detect_collision() {
     for (Robot *robot : robot_vector) {
 
-        QPoint r_position = robot->get_position();
-        Direction r_dir = robot->get_direction();
-        int r_coll_length = robot->get_collision_distance();
-        std::vector<Wall *> coll_walls = walls_ifo_robot(r_position, r_dir);
+        const QPoint r_position{robot->get_position()};
+        const Direction r_dir{robot->get_direction()};
+        const int r_collision_distance{robot->get_collision_distance()};
+        const std::vector<Wall *> collision_walls{walls_ifo_robot(r_position, r_dir)};
 
-        for (Wall *wall : coll_walls) {
+        for (Wall *wall : collision_walls) {
 
-            QPoint w_position = wall->get_position();
-            QPoint w_size = wall->get_position();
+            const QPoint w_position{wall->get_position()};
+            const QPoint w_size{wall->get_size()};
+
+            const int r_right_bound{r_position.x() + r_collision_distance};
+            const int r_bottom_bound{r_position.y() + r_collision_distance};
+            const int r_left_bound{r_position.x() - r_collision_distance};
+            const int r_top_bound{r_position.y() - r_collision_distance};
 
             switch(r_dir) {
                 case Direction::RIGHT:
-                    if (r_position.x() + r_coll_length >= w_position.x()) {
+                    if (r_right_bound >= w_position.x()) {
                         return true;
                     }
                     break;
                 case Direction::DOWN:
-                    if (r_position.y() + r_coll_length >= w_position.y()) {
+                    if (r_bottom_bound >= w_position.y()) {
                         return true;
                     }
                     break;
                 case Direction::LEFT:
-                    if (r_position.x() - r_coll_length <= w_position.x() + w_size.x()) {
+                    if (r_left_bound <= w_position.x() + w_size.x()) {
                         return true;
                     }
                     break;
                 case Direction::UP:
-                    if (r_position.y() - r_coll_length <= w_position.y() + w_size.y()) {
+                    if (r_top_bound <= w_position.y() + w_size.y()) {
                         return true;
                     }
                     break;
@@ -48,22 +53,24 @@ std::vector<Wall *> RobotController::walls_ifo_robot(QPoint r_position, Directio
 
     for (Wall *wall : wall_vector) {
 
-        QPoint w_position = wall->get_position();
-        QPoint w_size = wall->get_size();
+        const QPoint w_position{wall->get_position()};
+        const QPoint w_size{wall->get_size()};
+
+        bool intersects{false};
 
         switch(r_dir) {
             case Direction::RIGHT:
             case Direction::LEFT:
-                if (w_position.y() <= r_position.y() && r_position.y() <= w_position.y() + w_size.y()) {
-                    walls.push_back(wall);
-                }
+                intersects = (w_position.y() <= r_position.y() && r_position.y() <= w_position.y() + w_size.y());
                 break;
             case Direction::UP:
             case Direction::DOWN:
-                if (w_position.x() <= r_position.x() && r_position.x() <= w_position.x() + w_size.x()) {
-                    walls.push_back(wall);
-                }
+                intersects = (w_position.x() <= r_position.x() && r_position.x() <= w_position.x() + w_size.x());
                 break;
+        }
+
+        if (intersects) {
+            walls.push_back(wall);
         }
     }
     return walls;
