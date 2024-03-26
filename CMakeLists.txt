@@ -16,6 +16,14 @@ set(PROJECT_SOURCES
         src/run_app.cpp
         src/models/robot.cpp
         src/models/robot.h
+        src/models/wall.cpp
+        src/models/wall.h
+        src/controllers/robot_controller.cpp
+        src/controllers/robot_controller.h
+        src/gui/gui.cpp
+        src/gui/gui.h
+        src/gui/robot_view_widget.cpp
+        src/gui/robot_view_widget.h
         # src/services/robot_service.cpp
         # src/services/robot_service.h
 )

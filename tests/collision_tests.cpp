@@ -2,9 +2,7 @@
 
 #include <iostream>
 
-void CollisionTests::SetUp() {
-    controller = RobotController();
-}
+void CollisionTests::SetUp() { controller = RobotController(); }
 
 TEST_F(CollisionTests, NoCollision_Test) {
     controller.add_robot(new Robot{100, 100});
@@ -73,7 +71,6 @@ TEST_F(CollisionTests, ImmediateCollision_Test) {
 
     bool collision{controller.detect_collision()};
     controller.move_robots(collision);
-
 
     EXPECT_EQ(robot->get_position(), QPoint(5, 5));
     EXPECT_EQ(robot->get_direction(), Direction::DOWN);

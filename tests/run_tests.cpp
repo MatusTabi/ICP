@@ -1,8 +1,8 @@
-#include <gtest/gtest.h>
+#include "collision_tests.h"
+#include "robot_controller_tests.h"
 #include "simple_robot_tests.h"
 #include "wall_tests.h"
-#include "robot_controller_tests.h"
-#include "collision_tests.h"
+#include <gtest/gtest.h>
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);

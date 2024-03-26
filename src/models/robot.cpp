@@ -1,63 +1,46 @@
 #include "robot.h"
 
-Robot::Robot(int x, int y) : position{x, y} {}
+#include <cmath>
+#include <iostream>
 
-Robot::Robot(QPoint r_position) : position{r_position} {}
+Robot::Robot(double x, double y) : position{x, y} {}
 
-Robot::Robot(QPoint r_position, RobotSpeed r_speed, Direction r_dir) 
-    : position{r_position}, speed{r_speed}, dir{r_dir} {}
+Robot::Robot(QPointF r_position) : position{r_position} {}
 
-Robot::Robot(QPoint r_position, RobotSpeed r_speed) : position{r_position}, speed{r_speed} {}
+Robot::Robot(QPointF r_position, int r_rotation_angle)
+    : position{r_position}, rotation_angle{r_rotation_angle} {}
 
-Robot::Robot(QPoint r_position, Direction r_dir, RotationDirection r_rot_dir)
-    : position{r_position}, dir{r_dir}, rot_dir{r_rot_dir} {}
+Robot::Robot(QPointF r_position, int r_rotation_angle,
+             RotationDirection r_rotation_direction)
+    : position{r_position}, rotation_angle{r_rotation_angle},
+      rotation_direction{r_rotation_direction} {}
 
 void Robot::move() {
-    switch(dir) {
-        case Direction::UP: 
-            position.setY(position.y() - speed); 
-            break;
-        case Direction::RIGHT: 
-            position.setX(position.x() + speed); 
-            break;
-        case Direction::DOWN: 
-            position.setY(position.y() + speed); 
-            break;
-        case Direction::LEFT: 
-            position.setX(position.x() - speed); 
-            break;
-    }
+    double radian = rotation_angle * M_PI / 180.0; // radians
+    position.setX(position.x() + speed * cos(radian));
+    position.setY(position.y() - speed * sin(radian));
 }
 
 void Robot::rotate() {
-    if (rot_dir == RotationDirection::CLOCKWISE) {
-        dir = static_cast<Direction>((static_cast<int>(dir) + 1) % 4);
+    if (rotation_direction == RotationDirection::CLOCKWISE) {
+        // direction = (direction + 90) % 360;
+    } else {
+        // direction = (direction + 270) % 360;
     }
-    else {
-        dir = static_cast<Direction>((static_cast<int>(dir) + 3) % 4);
-    }
 }
 
-QPoint const Robot::get_position() {
-    return position;
-}
+const QPointF Robot::get_position() { return position; }
 
-RobotSpeed const Robot::get_speed() {
-    return speed;
-}
+const int Robot::get_collision_distance() { return collision_distance; }
 
-int const Robot::get_collision_distance() {
-    return collision_distance;
-}
+const int Robot::get_rotation_angle() { return rotation_angle; }
 
-Direction const Robot::get_direction() {
-    return dir;
-}
-
-void Robot::set_speed(RobotSpeed r_speed) {
-    speed = r_speed;
-}
+const int Robot::get_size() { return size; }
 
 void Robot::set_collision_distance(int r_coll_length) {
     collision_distance = r_coll_length;
+}
+
+void Robot::set_position(QPointF intermediate_position) {
+    position = intermediate_position;
 }

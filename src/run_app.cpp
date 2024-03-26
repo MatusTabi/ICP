@@ -1,19 +1,17 @@
-// #include "src/gui/gui.h"
+#include "gui/gui.h"
 
 #include <QApplication>
 #include <QMainWindow>
 #include <iostream>
 
-using namespace std;
-
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
-    
-    // GUI main_window;
-    // main_window.showMaximized();
-    
-    cout << "Testing print text" << endl;
+
+    GUI main_window;
+    main_window.showMaximized();
+
+    std::cout << "Testing print text"
+              << "\n";
 
     return a.exec();
 }
