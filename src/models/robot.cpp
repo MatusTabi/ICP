@@ -1,4 +1,4 @@
-#include "robot.h"
+#include "robot.hpp"
 
 #include <cmath>
 #include <iostream>
@@ -29,14 +29,6 @@ void Robot::rotate() {
     }
 }
 
-const QPointF Robot::get_position() { return position; }
-
-const int Robot::get_collision_distance() { return collision_distance; }
-
-const int Robot::get_rotation_angle() { return rotation_angle; }
-
-const int Robot::get_size() { return size; }
-
 void Robot::set_collision_distance(int r_coll_length) {
     collision_distance = r_coll_length;
 }
@@ -44,3 +36,11 @@ void Robot::set_collision_distance(int r_coll_length) {
 void Robot::set_position(QPointF intermediate_position) {
     position = intermediate_position;
 }
+
+const QPointF Robot::get_position() { return position; }
+
+const int Robot::get_collision_distance() { return collision_distance; }
+
+const int Robot::get_rotation_angle() { return rotation_angle; }
+
+const int Robot::get_size() { return size; }

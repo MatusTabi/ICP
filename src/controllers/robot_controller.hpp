@@ -1,8 +1,8 @@
-#ifndef ROBOT_CONTROLLER_H
-#define ROBOT_CONTROLLER_H
+#ifndef ROBOT_CONTROLLER_HPP
+#define ROBOT_CONTROLLER_HPP
 
-#include "../models/robot.h"
-#include "../models/wall.h"
+#include "../models/robot.hpp"
+#include "../models/wall.hpp"
 #include <vector>
 
 class RobotController {
@@ -13,8 +13,7 @@ class RobotController {
     void add_robot_vector(std::vector<Robot *> new_robot_vector);
     void add_wall_vector(std::vector<Wall *> new_wall_vector);
 
-    bool detect_collision();
-    void move_robots(const bool collision);
+    void move_robots();
     void change_collision_distance(int r_collision_distance);
     void change_properties(int r_collision_distance);
 
@@ -22,6 +21,7 @@ class RobotController {
     std::vector<Wall *> const get_walls();
 
   private:
+    bool detect_collision(Robot *robot);
     std::vector<Wall *> walls_ifo_robot(QPointF r_position, int r_dir);
 
     std::vector<Robot *> robot_vector;

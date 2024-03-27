@@ -1,5 +1,5 @@
-#ifndef ROBOT_H
-#define ROBOT_H
+#ifndef ROBOT_HPP
+#define ROBOT_HPP
 
 #include <QPointF>
 

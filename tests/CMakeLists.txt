@@ -15,9 +15,9 @@ set(SOURCES
 )
 
 set(HEADERS 
-    ../src/models/robot.h
-    ../src/models/wall.h
-    ../src/controllers/robot_controller.h
+    ../src/models/robot.hpp
+    ../src/models/wall.hpp
+    ../src/controllers/robot_controller.hpp
     ../tests/simple_robot_tests.h
     ../tests/wall_tests.h
     ../tests/robot_controller_tests.h

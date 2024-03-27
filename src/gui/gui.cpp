@@ -1,4 +1,4 @@
-#include "gui.h"
+#include "gui.hpp"
 
 #include <QTimer>
 #include <QVBoxLayout>
@@ -13,27 +13,31 @@ GUI::GUI(QWidget *parent)
 
     controller->add_robot(new Robot(100, 100));
     controller->add_robot(new Robot(100, 200));
+    controller->add_wall(new Wall(500, 50, 150, 100));
     setup_ui();
     setup_timer();
 }
 
 GUI::~GUI() {
-    delete robot_view_widget;
+    delete area_widget;
     delete timer;
     delete controller;
 }
 
 void GUI::move_robots() {
-    controller->move_robots(controller->detect_collision());
+    controller->move_robots();
+
     std::vector<Robot *> robots{controller->get_robots()};
-    robot_view_widget->set_robots(robots);
+    std::vector<Wall *> walls{controller->get_walls()};
+
+    area_widget->set_models(robots, walls);
 }
 
 void GUI::setup_ui() {
-    robot_view_widget = new RobotViewWidget(this);
+    area_widget = new AreaWidget(this);
 
     QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(robot_view_widget);
+    layout->addWidget(area_widget);
 
     QWidget *central_widget = new QWidget(this);
     central_widget->setLayout(layout);

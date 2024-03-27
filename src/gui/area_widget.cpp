@@ -1,18 +1,20 @@
-#include "robot_view_widget.h"
+#include "area_widget.hpp"
 
 #include <QPainter>
 #include <iostream>
 
 #define ROBOT_ANGLE 45
 
-RobotViewWidget::RobotViewWidget(QWidget *parent) : QWidget{parent} {}
+AreaWidget::AreaWidget(QWidget *parent) : QWidget{parent} {}
 
-void RobotViewWidget::set_robots(const std::vector<Robot *> &robots) {
+void AreaWidget::set_models(const std::vector<Robot *> &robots,
+                                 const std::vector<Wall *> &walls) {
     this->robots = robots;
+    this->walls = walls;
     update();
 }
 
-void RobotViewWidget::paintEvent(QPaintEvent *event) {
+void AreaWidget::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
 
     QPainter painter{this};
@@ -20,6 +22,11 @@ void RobotViewWidget::paintEvent(QPaintEvent *event) {
     painter.setRenderHints(QPainter::Antialiasing, true);
     painter.setPen(QPen(Qt::white, 4, Qt::SolidLine));
 
+    draw_robots(painter);
+    draw_walls(painter);
+}
+
+void AreaWidget::draw_robots(QPainter &painter) {
     for (const auto &robot : robots) {
         const QPointF r_position = robot->get_position();
         const int r_size = robot->get_size();
@@ -29,7 +36,17 @@ void RobotViewWidget::paintEvent(QPaintEvent *event) {
     }
 }
 
-void RobotViewWidget::draw_lines(QPainter &painter, const QPointF &r_position,
+void AreaWidget::draw_walls(QPainter &painter) {
+    for (const auto &wall : walls) {
+        const QPointF w_position = wall->get_position();
+        const QPointF w_size = wall->get_size();
+        
+        painter.setPen(QPen(wall->get_color(), 4, Qt::SolidLine));
+        painter.drawRect(w_position.x(), w_position.y(), w_size.x(), w_size.y());
+    }
+}
+
+void AreaWidget::draw_lines(QPainter &painter, const QPointF &r_position,
                                  const int &r_size, const int &r_direction) {
     QLineF angle_line;
     angle_line.setP1(r_position);

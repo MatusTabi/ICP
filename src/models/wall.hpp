@@ -1,5 +1,5 @@
-#ifndef WALL_H
-#define WALL_H
+#ifndef WALL_HPP
+#define WALL_HPP
 
 #include <QPoint>
 
@@ -10,6 +10,7 @@ class Wall {
     Wall(QPoint w_position);
     Wall(QPoint w_position, QPoint w_size);
     Wall(QPoint w_position, QPoint w_size, Qt::GlobalColor w_color);
+
     QPoint const get_position();
     QPoint const get_size();
     Qt::GlobalColor const get_color();

@@ -1,4 +1,4 @@
-#include "wall.h"
+#include "wall.hpp"
 
 Wall::Wall(int x, int y) : position{x, y} {}
 

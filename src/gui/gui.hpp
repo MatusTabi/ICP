@@ -1,8 +1,8 @@
-#ifndef GUI_H
-#define GUI_H
+#ifndef GUI_HPP
+#define GUI_HPP
 
-#include "../controllers/robot_controller.h"
-#include "robot_view_widget.h"
+#include "../controllers/robot_controller.hpp"
+#include "area_widget.hpp"
 #include <QElapsedTimer>
 #include <QMainWindow>
 
@@ -21,7 +21,7 @@ class GUI : public QMainWindow {
 
     RobotController *controller;
     QTimer *timer;
-    RobotViewWidget *robot_view_widget;
+    AreaWidget *area_widget;
 };
 
 #endif
