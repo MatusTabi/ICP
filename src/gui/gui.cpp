@@ -1,7 +1,8 @@
 #include "gui.hpp"
+#include "../../ui_gui.h"
 
+#include <QHBoxLayout>
 #include <QTimer>
-#include <QVBoxLayout>
 #include <QWidget>
 #include <iostream>
 
@@ -9,18 +10,23 @@ GUI::GUI(QWidget *parent)
     : QMainWindow{parent}, controller{RobotController::get_instance()} {
 
     setStyleSheet("background-color: black;");
-    setAutoFillBackground(true);
 
-    controller->add_robot(new Robot(100, 100));
-    controller->add_robot(new Robot(100, 200));
-    controller->add_wall(new Wall(500, 50, 150, 100));
+    controller->add_robot(new Robot(Vector2D{300, 300}, Vector2D(2, 0)));
+    controller->add_robot(new Robot(Vector2D{500, 500}, Vector2D(0, 2)));
+
+    controller->add_wall(new Wall(0, 0, 1000, 202));
+    controller->add_wall(new Wall(0, 200, 200, 800));
+    controller->add_wall(new Wall(800, 200, 200, 800));
+    controller->add_wall(new Wall(200, 800, 600, 200));
+    
     setup_ui();
     setup_timer();
 }
 
 GUI::~GUI() {
     delete area_widget;
-    delete timer;
+    delete select_widget;
+    // delete timer;
     delete controller;
 }
 
@@ -34,10 +40,13 @@ void GUI::move_robots() {
 }
 
 void GUI::setup_ui() {
+    select_widget = new SelectWidget(this);
     area_widget = new AreaWidget(this);
+    select_widget->setMaximumWidth(300);
 
-    QVBoxLayout *layout = new QVBoxLayout;
+    QHBoxLayout *layout = new QHBoxLayout;
     layout->addWidget(area_widget);
+    layout->addWidget(select_widget);
 
     QWidget *central_widget = new QWidget(this);
     central_widget->setLayout(layout);

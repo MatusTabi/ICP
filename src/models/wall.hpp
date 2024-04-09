@@ -1,24 +1,26 @@
 #ifndef WALL_HPP
 #define WALL_HPP
 
-#include <QPoint>
+#include "../utilities/vector2d.hpp"
+#include "entity.hpp"
+
+#include <QColor>
 
 class Wall {
   public:
-    Wall(int x, int y);
-    Wall(int x, int y, int size_x, int size_y);
-    Wall(QPoint w_position);
-    Wall(QPoint w_position, QPoint w_size);
-    Wall(QPoint w_position, QPoint w_size, Qt::GlobalColor w_color);
+    Wall(double x, double y);
+    Wall(double x, double y, double width, double height);
+    Wall(Vector2D w_position);
+    ~Wall() = default;
 
-    QPoint const get_position();
-    QPoint const get_size();
-    Qt::GlobalColor const get_color();
+    const Vector2D &get_position();
+    const Vector2D &get_size();
+    const Qt::GlobalColor &get_color();
 
   private:
-    QPoint position;
-    QPoint size = QPoint(50, 50);
-    Qt::GlobalColor color = Qt::red;
+    Vector2D position;
+    Vector2D size;
+    Qt::GlobalColor color = Qt::blue;
 };
 
 #endif

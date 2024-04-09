@@ -1,4 +1,5 @@
 #include "area_widget.hpp"
+#include "../utilities/vector2d.hpp"
 
 #include <QPainter>
 #include <iostream>
@@ -8,7 +9,7 @@
 AreaWidget::AreaWidget(QWidget *parent) : QWidget{parent} {}
 
 void AreaWidget::set_models(const std::vector<Robot *> &robots,
-                                 const std::vector<Wall *> &walls) {
+                            const std::vector<Wall *> &walls) {
     this->robots = robots;
     this->walls = walls;
     update();
@@ -20,40 +21,35 @@ void AreaWidget::paintEvent(QPaintEvent *event) {
     QPainter painter{this};
 
     painter.setRenderHints(QPainter::Antialiasing, true);
-    painter.setPen(QPen(Qt::white, 4, Qt::SolidLine));
 
     draw_robots(painter);
     draw_walls(painter);
+    draw_border(painter);
 }
 
 void AreaWidget::draw_robots(QPainter &painter) {
     for (const auto &robot : robots) {
-        const QPointF r_position = robot->get_position();
-        const int r_size = robot->get_size();
+        painter.setPen(QPen(robot->color(), 4, Qt::SolidLine));
+        const Vector2D r_position = robot->get_position();
+        const Vector2D line = robot->compute_direction_line();
+        const Vector2D middle_point = robot->get_middle_point();
+        const double r_width = robot->get_width();
 
-        painter.drawEllipse(r_position, r_size, r_size);
-        draw_lines(painter, r_position, r_size, robot->get_rotation_angle());
+        painter.drawEllipse(r_position.x_, r_position.y_, r_width, r_width);
+        painter.drawLine(middle_point.x_, middle_point.y_, line.x_, line.y_);
     }
 }
 
 void AreaWidget::draw_walls(QPainter &painter) {
     for (const auto &wall : walls) {
-        const QPointF w_position = wall->get_position();
-        const QPointF w_size = wall->get_size();
-        
+        const Vector2D w_position = wall->get_position();
+        const Vector2D w_size = wall->get_size();
+
         painter.setPen(QPen(wall->get_color(), 4, Qt::SolidLine));
-        painter.drawRect(w_position.x(), w_position.y(), w_size.x(), w_size.y());
+        painter.drawRect(w_position.x_, w_position.y_, w_size.x_, w_size.y_);
     }
 }
 
-void AreaWidget::draw_lines(QPainter &painter, const QPointF &r_position,
-                                 const int &r_size, const int &r_direction) {
-    QLineF angle_line;
-    angle_line.setP1(r_position);
-    angle_line.setAngle(r_direction - ROBOT_ANGLE);
-    angle_line.setLength(r_size);
-    painter.drawLine(angle_line);
-
-    angle_line.setAngle(r_direction + ROBOT_ANGLE);
-    painter.drawLine(angle_line);
+void AreaWidget::draw_border(QPainter &painter) {
+    painter.drawRect(rect());
 }

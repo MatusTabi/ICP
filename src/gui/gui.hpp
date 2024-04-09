@@ -3,13 +3,19 @@
 
 #include "../controllers/robot_controller.hpp"
 #include "area_widget.hpp"
+#include "select_widget.hpp"
 #include <QElapsedTimer>
 #include <QMainWindow>
 
+QT_BEGIN_NAMESPACE
+namespace Ui {
+class GUI;
+}
+QT_END_NAMESPACE
 class GUI : public QMainWindow {
     Q_OBJECT
   public:
-    explicit GUI(QWidget *parent = nullptr);
+    GUI(QWidget *parent = nullptr);
     ~GUI();
 
   private slots:
@@ -22,6 +28,8 @@ class GUI : public QMainWindow {
     RobotController *controller;
     QTimer *timer;
     AreaWidget *area_widget;
+    SelectWidget *select_widget;
+    Ui::GUI *ui;
 };
 
 #endif

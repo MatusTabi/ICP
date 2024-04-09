@@ -1,20 +1,15 @@
 #include "wall.hpp"
+#include <iostream>
 
-Wall::Wall(int x, int y) : position{x, y} {}
+Wall::Wall(double x, double y) : position{x, y} {}
 
-Wall::Wall(int x, int y, int size_x, int size_y)
-    : position{x, y}, size{size_x, size_y} {}
+Wall::Wall(Vector2D w_position) : position{w_position} {}
 
-Wall::Wall(QPoint w_position) : position{w_position} {}
+Wall::Wall(double x, double y, double width, double height)
+    : position{x, y}, size{width, height} {}
 
-Wall::Wall(QPoint w_position, QPoint w_size)
-    : position{w_position}, size{w_size} {}
+const Vector2D &Wall::get_position() { return position; }
 
-Wall::Wall(QPoint w_position, QPoint w_size, Qt::GlobalColor w_color)
-    : position{w_position}, size{w_size}, color{w_color} {}
+const Vector2D &Wall::get_size() { return size; }
 
-QPoint const Wall::get_position() { return position; }
-
-QPoint const Wall::get_size() { return size; }
-
-Qt::GlobalColor const Wall::get_color() { return color; }
+const Qt::GlobalColor &Wall::get_color() { return color; }

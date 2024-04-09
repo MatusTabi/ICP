@@ -3,6 +3,7 @@
 
 #include "../models/robot.hpp"
 #include "../models/wall.hpp"
+#include "../models/entity.hpp"
 #include <vector>
 
 class RobotController {
@@ -21,8 +22,9 @@ class RobotController {
     std::vector<Wall *> const get_walls();
 
   private:
-    bool detect_collision(Robot *robot);
-    std::vector<Wall *> walls_ifo_robot(QPointF r_position, int r_dir);
+    bool overlaps_diag_static(Robot *robot, Wall *wall);
+    void detect_collision(Robot *robot);
+    // std::vector<Wall *> walls_ifo_robot(QPointF r_position, int r_dir);
 
     std::vector<Robot *> robot_vector;
     std::vector<Wall *> wall_vector;

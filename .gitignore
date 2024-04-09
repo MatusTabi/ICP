@@ -6,3 +6,4 @@ tests/CMakeCache.txt
 tests/Makefile
 tests/tests
 .clang-format
+build-icp-robots-Desktop_Qt_6_6_2_MinGW_64_bit-Debug

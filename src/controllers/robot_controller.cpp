@@ -1,4 +1,5 @@
 #include "robot_controller.hpp"
+#include <cmath>
 #include <iostream>
 
 RobotController *RobotController::instance = nullptr;
@@ -10,81 +11,32 @@ RobotController *RobotController::get_instance() {
     return instance;
 }
 
-bool RobotController::detect_collision(Robot *robot) {
-
-    const QPointF r_position{robot->get_position()};
-    const int r_rotation_angle{robot->get_rotation_angle()};
-    const int r_collision_distance{robot->get_collision_distance()};
-    const std::vector<Wall *> collision_walls{
-        walls_ifo_robot(r_position, r_rotation_angle)};
-
-    for (Wall *wall : collision_walls) {
-
-        const QPoint w_position{wall->get_position()};
-        const QPoint w_size{wall->get_size()};
-
-        const double r_right_bound{r_position.x() + r_collision_distance};
-        const double r_bottom_bound{r_position.y() + r_collision_distance};
-        const double r_left_bound{r_position.x() - r_collision_distance};
-        const double r_top_bound{r_position.y() - r_collision_distance};
-        bool collide{false};
-
-        switch (r_rotation_angle) {
-        case 0:
-            if (r_right_bound >= w_position.x()) {
-                collide = true;
-            }
-            break;
-        case 270:
-            if (r_bottom_bound >= w_position.y()) {
-                collide = true;
-            }
-            break;
-        case 180:
-            if (r_left_bound <= w_position.x() + w_size.x()) {
-                collide = true;
-            }
-            break;
-        case 90:
-            if (r_top_bound <= w_position.y() + w_size.y()) {
-                collide = true;
-            }
-            break;
-        }
-        if (collide) {
-            return true;
-        }
-    }
-    return false;
-}
-
-std::vector<Wall *> RobotController::walls_ifo_robot(QPointF r_position,
-                                                     int r_rotation_angle) {
-    std::vector<Wall *> walls;
-
+void RobotController::detect_collision(Robot *robot) {
+    Vector2D potential_position{robot->get_position() + robot->velocity()};
     for (Wall *wall : wall_vector) {
-        const QPoint w_position{wall->get_position()};
-        const QPoint w_size{wall->get_size()};
-        bool intersects{false};
+        Vector2D nearest_point;
+        const double robot_width = robot->get_width();
+        const Vector2D velocity = robot->velocity();
 
-        switch (r_rotation_angle) {
-        case 0:
-        case 180:
-            intersects = (w_position.y() <= r_position.y() &&
-                          r_position.y() <= w_position.y() + w_size.y());
-            break;
-        case 90:
-        case 270:
-            intersects = (w_position.x() <= r_position.x() &&
-                          r_position.x() <= w_position.x() + w_size.x());
-            break;
-        }
+        nearest_point.x_ =
+            std::max(wall->get_position().x_,
+                     std::min(potential_position.x_,
+                              wall->get_position().x_ + wall->get_size().x_ - robot_width));
+        nearest_point.y_ =
+            std::max(wall->get_position().y_,
+                     std::min(potential_position.y_,
+                              wall->get_position().y_ + wall->get_size().y_ - robot_width));
 
-        if (intersects) {
-            walls.push_back(wall);
+        Vector2D distance = potential_position - nearest_point;
+        double overlaps = robot->get_width() - distance.length();
+        if (overlaps > 0) {
+            potential_position =
+                potential_position + distance.normalize() * overlaps;
+            robot->rotation_on();
+            return;
         }
     }
-    return walls;
+    robot->set_position(potential_position);
 }
 
 void RobotController::add_robot(Robot *new_robot) {
@@ -107,22 +59,24 @@ void RobotController::add_wall_vector(std::vector<Wall *> new_wall_vector) {
 
 void RobotController::change_properties(int r_collision_distance) {
     for (Robot *robot : robot_vector) {
-        robot->set_collision_distance(r_collision_distance);
+        // robot->set_collision_distance(r_collision_distance);
     }
 }
 
 void RobotController::change_collision_distance(int r_collision_distance) {
     for (Robot *robot : robot_vector) {
-        robot->set_collision_distance(r_collision_distance);
+        // robot->set_collision_distance(r_collision_distance);
     }
 }
 
 void RobotController::move_robots() {
     for (Robot *robot : robot_vector) {
-        if (detect_collision(robot)) {
+        if (robot->is_rotating()) {
+            robot->colorize(Qt::red);
             robot->rotate();
         } else {
-            robot->move();
+            robot->colorize(Qt::white);
+            detect_collision(robot);
         }
     }
 }
