@@ -6,7 +6,7 @@
 
 class CollisionTests : public testing::Test {
   protected:
-    RobotController controller;
+    RobotController controller_;
 
     void SetUp() override;
     // void TearDown() override;

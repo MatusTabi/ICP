@@ -1,10 +1,11 @@
 #ifndef GUI_HPP
 #define GUI_HPP
 
-#include "../controllers/robot_controller.hpp"
+#include "../controllers/controller.hpp"
+#include "top_tool_bar.hpp"
 #include "area_widget.hpp"
 #include "select_widget.hpp"
-#include <QElapsedTimer>
+#include "sidebar.hpp"
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
@@ -18,18 +19,17 @@ class GUI : public QMainWindow {
     GUI(QWidget *parent = nullptr);
     ~GUI();
 
-  private slots:
-    void move_robots();
-
   private:
-    void setup_timer();
+    // void setup_timer();
     void setup_ui();
+    void setup_connections();
 
-    RobotController *controller;
-    QTimer *timer;
+    Controller *controller_;
+    // QTimer *timer;
     AreaWidget *area_widget;
-    SelectWidget *select_widget;
+    // SideBar *sidebar;
     Ui::GUI *ui;
+    TopToolBar *top_tool_bar;
 };
 
 #endif

@@ -15,6 +15,10 @@ Entity::Entity(Vector2D r_position, double width, double height)
 Entity::Entity(Vector2D r_position, Vector2D r_velocity)
     : position{r_position}, velocity_{r_velocity} {}
 
+Entity::Entity(Vector2D r_position, Vector2D r_velocity, int r_rotation_angle)
+    : position{r_position}, velocity_{r_velocity}, rotation_angle_{
+                                                       r_rotation_angle} {}
+
 Entity::~Entity() {}
 
 void Entity::adjust_position(const int kTileSize) { position *= kTileSize; }
@@ -59,4 +63,4 @@ const double &Entity::get_height() { return height; }
 
 const Qt::GlobalColor &Entity::color() { return color_; }
 
-const int &Entity::get_collision_distance() { return collision_distance; }
+const int &Entity::collision_distance() { return collision_distance_; }

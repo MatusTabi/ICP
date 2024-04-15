@@ -18,14 +18,18 @@ set(PROJECT_SOURCES
         src/models/robot.hpp
         src/models/wall.cpp
         src/models/wall.hpp
-        src/controllers/robot_controller.cpp
-        src/controllers/robot_controller.hpp
+        src/controllers/controller.cpp
+        src/controllers/controller.hpp
         src/gui/gui.cpp
         src/gui/gui.hpp
         src/gui/area_widget.cpp
         src/gui/area_widget.hpp
         src/gui/select_widget.cpp
         src/gui/select_widget.hpp
+        src/gui/top_tool_bar.hpp
+        src/gui/top_tool_bar.cpp
+        src/gui/sidebar.hpp
+        src/gui/sidebar.cpp
         src/models/entity.cpp
         src/models/entity.hpp
         src/utilities/vector2d.cpp

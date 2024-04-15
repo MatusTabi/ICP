@@ -1,61 +1,66 @@
 #include "gui.hpp"
-#include "../../ui_gui.h"
 
+#include <QAction>
+#include <QDir>
 #include <QHBoxLayout>
 #include <QTimer>
+#include <QToolBar>
+#include <QDockWidget>
+#include <QMenuBar>
 #include <QWidget>
 #include <iostream>
 
 GUI::GUI(QWidget *parent)
-    : QMainWindow{parent}, controller{RobotController::get_instance()} {
+    : QMainWindow{parent}, controller_{Controller::get_instance()} {
 
-    setStyleSheet("background-color: black;");
+    setStyleSheet("background-color: #ddd8d3;");
+    setWindowTitle(tr("2D Robot Simulator"));
 
-    controller->add_robot(new Robot(Vector2D{300, 300}, Vector2D(2, 0)));
-    controller->add_robot(new Robot(Vector2D{500, 500}, Vector2D(0, 2)));
+    // controller_->add_robot_vector(std::vector<Robot *>{
+        // new Robot(Vector2D{300, 300}, Vector2D{2, 0}),
+    // });
 
-    controller->add_wall(new Wall(0, 0, 1000, 202));
-    controller->add_wall(new Wall(0, 200, 200, 800));
-    controller->add_wall(new Wall(800, 200, 200, 800));
-    controller->add_wall(new Wall(200, 800, 600, 200));
-    
+    // controller_->add_wall(new Wall(0, 0, 1000, 202));
+    // controller_->add_wall(new Wall(0, 200, 200, 800));
+    // controller_->add_wall(new Wall(800, 200, 200, 800));
+    // controller_->add_wall(new Wall(200, 800, 600, 200));
+
     setup_ui();
-    setup_timer();
+    // setup_timer();
+    setup_connections();
 }
 
 GUI::~GUI() {
     delete area_widget;
-    delete select_widget;
+    delete top_tool_bar;
+    // delete select_widget;
     // delete timer;
-    delete controller;
-}
-
-void GUI::move_robots() {
-    controller->move_robots();
-
-    std::vector<Robot *> robots{controller->get_robots()};
-    std::vector<Wall *> walls{controller->get_walls()};
-
-    area_widget->set_models(robots, walls);
+    delete controller_;
 }
 
 void GUI::setup_ui() {
-    select_widget = new SelectWidget(this);
     area_widget = new AreaWidget(this);
-    select_widget->setMaximumWidth(300);
+    
+    // sidebar = new SideBar(this);
 
     QHBoxLayout *layout = new QHBoxLayout;
+    // layout->addWidget(sidebar);
     layout->addWidget(area_widget);
-    layout->addWidget(select_widget);
+    
+    top_tool_bar = new TopToolBar(tr("ToolBar"), this);
+    addToolBar(top_tool_bar);
+
+    // QMenuBar *menu_bar = new QMenuBar(this);
+    // menu_bar->addMenu(tr("File"));
+    // setMenuBar(menu_bar);
 
     QWidget *central_widget = new QWidget(this);
     central_widget->setLayout(layout);
     setCentralWidget(central_widget);
 }
 
-void GUI::setup_timer() {
-    timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &GUI::move_robots);
-    const int interval = 17; // 60 FPS
-    timer->start(interval);
+void GUI::setup_connections() {
+    connect(top_tool_bar, &TopToolBar::toggle_simulation, area_widget, &AreaWidget::toggle_timer);
+    connect(area_widget, &AreaWidget::pause, top_tool_bar, &TopToolBar::toggle_action_icon);
+    connect(top_tool_bar, &TopToolBar::add_wall, area_widget, &AreaWidget::add_wall);
 }

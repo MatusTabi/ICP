@@ -10,6 +10,7 @@ class Robot : public Entity {
     Robot(double x, double y);
     Robot(Vector2D r_position);
     Robot(Vector2D r_position, Vector2D r_velocity);
+    Robot(Vector2D r_position, Vector2D r_velocity, int r_rotation_angle);
 
     // Robot(QPointF r_position, int r_rotation_angle);
     // Robot(QPointF r_position, int r_rotation_angle,

@@ -7,11 +7,15 @@
 class Entity {
 
   public:
+    static const Qt::GlobalColor CollisionColor = Qt::red;
+    static const Qt::GlobalColor DefaultColor = Qt::black;
+
     Entity(double x, double y);
     Entity(Vector2D r_position);
     Entity(double x, double y, double width, double height);
     Entity(Vector2D r_position, double width, double height);
     Entity(Vector2D r_position, Vector2D r_velocity);
+    Entity(Vector2D r_position, Vector2D r_velocity, int r_rotation_angle);
 
     virtual ~Entity();
 
@@ -37,19 +41,19 @@ class Entity {
     const double &get_width();
     const double &get_height();
     const Qt::GlobalColor &color();
-    const int &get_collision_distance();
+    const int &collision_distance();
 
   protected:
     bool rotate_flag_ = false;
     int rotation_angle_ = 40;
-    int collision_distance = 40;
+    int collision_distance_ = 20;
     int angular_speed = 1;
     int current_rotation = 0;
     Vector2D position;
     Vector2D velocity_;
     double width = 30;
     double height;
-    Qt::GlobalColor color_ = Qt::white;
+    Qt::GlobalColor color_ = Entity::DefaultColor;
 };
 
 #endif

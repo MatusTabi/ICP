@@ -5,6 +5,8 @@ Vector2D::Vector2D() : x_{0}, y_{0} {}
 
 Vector2D::Vector2D(double x, double y) : x_{x}, y_{y} {}
 
+Vector2D::Vector2D(const QPoint &point) : x_(point.x()), y_(point.y()) {}
+
 const Vector2D Vector2D::operator*(double scalar) const {
     return Vector2D{x_ * scalar, y_ * scalar};
 }

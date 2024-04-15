@@ -2,6 +2,7 @@
 #define VECTOR2D_HPP
 
 #include <iostream>
+#include <QPoint>
 
 struct Vector2D {
     double x_;
@@ -9,6 +10,7 @@ struct Vector2D {
 
     Vector2D();
     Vector2D(double x, double y);
+    Vector2D(const QPoint &point);
 
     const Vector2D operator*(double scalar) const;
     const Vector2D operator*(int scalar) const;

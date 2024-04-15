@@ -6,7 +6,7 @@
 
 class RobotControllerTests : public testing::Test {
   protected:
-    RobotController controller;
+    RobotController controller_;
 
     void SetUp() override;
 };
