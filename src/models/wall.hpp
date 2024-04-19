@@ -26,15 +26,15 @@ class Wall {
     void stop_resizing();
     Edge is_near_edge(const Vector2D &point) const;
 
-    void move(const Vector2D &point);
+    void relocate(const Vector2D &point);
     void resize(const Vector2D &point);
 
     bool &is_resizing();
 
   private:
-    const Vector2D calculate_moving_offset(const Vector2D &point);
+    const Vector2D calculate_relocate_offset(const Vector2D &point);
     const Vector2D calculate_resizing_offset(const Vector2D &point);
-    void update_move_position(const Vector2D &point);
+    void update_relocate_position(const Vector2D &point);
     void update_resize_position(const Vector2D &point);
 
     Vector2D position;

@@ -53,6 +53,22 @@ bool Controller::detect_collision(Robot *robot) {
     return false;
 }
 
+bool Controller::robot_collision(Robot *robot_1, Robot *robot_2) {
+    Vector2D distance = robot_1->get_position() - robot_2->get_position();
+    double radius_sum = robot_1->get_width() / 2.0 + robot_2->get_width() / 2.0;
+
+    // Calculate the relative velocity
+    Vector2D relative_velocity = robot_1->velocity() - robot_2->velocity();
+
+    // Check if the dot product of the distance vector and relative velocity is negative
+    if (distance.dot(relative_velocity) >= 0) {
+        return false; // Robots are moving away from each other or parallel, no collision
+    }
+
+    // Check if the length of the distance vector is less than the sum of their radii
+    return distance.length() < radius_sum + robot_1->collision_distance();
+}
+
 void Controller::add_robot(Robot *new_robot) {
     robot_vector.push_back(new_robot);
 }
@@ -70,13 +86,30 @@ void Controller::add_wall_vector(std::vector<Wall *> new_wall_vector) {
 }
 
 void Controller::move_robots() {
-    for (Robot *robot : robot_vector) {
+    for (size_t i = 0; i < robot_vector.size(); ++i) {
+        const Vector2D old_position = robot_vector[i]->get_position();
+        Robot *robot = robot_vector[i];
         if (robot->is_rotating()) {
             robot->rotate();
-            robot->colorize(Entity::CollisionColor);
         } else {
-            if (!detect_collision(robot)) {
+            bool collision = false;
+            for (size_t j = 0; j < robot_vector.size(); ++j) {
+                const Vector2D robot2_old_position = robot_vector[j]->get_position();
+                if (i == j) {
+                    continue;
+                }
+                if (robot_collision(robot, robot_vector[j])) {
+                    robot->set_position(old_position);
+                    robot_vector[j]->set_position(robot2_old_position);
+                    robot->rotation_on();
+                    collision = true;
+                    break;
+                }
+            }
+            if (!collision && !detect_collision(robot)) {
                 robot->colorize(Entity::DefaultColor);
+            } else {
+                robot->colorize(Entity::CollisionColor);
             }
         }
     }
@@ -87,6 +120,12 @@ void Controller::toggle_simulation_state() {
 }
 
 bool &Controller::is_simulation_running() { return simulation_runs; }
+
+void Controller::reset_color() {
+    for (Robot *robot : robot_vector) {
+        robot->colorize(Entity::DefaultColor);
+    }
+}
 
 std::vector<Robot *> const Controller::get_robots() { return robot_vector; }
 

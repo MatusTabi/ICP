@@ -1,6 +1,7 @@
 #include "area_widget.hpp"
 #include "../utilities/vector2d.hpp"
 
+#include <cmath>
 #include <iostream>
 
 #define ROBOT_ANGLE 45
@@ -10,11 +11,17 @@ AreaWidget::AreaWidget(QWidget *parent)
     setFocusPolicy(Qt::StrongFocus);
     setMouseTracking(true);
 
-    controller_->add_robot(new Robot(Vector2D{300, 300}, Vector2D{4, 0}));
     set_models(controller_->get_robots(), controller_->get_walls());
 
     setup_timer();
     // setup_connections();
+}
+
+AreaWidget::~AreaWidget() {
+    // delete controller_;
+    delete selected_robot;
+    delete selected_wall;
+    delete timer;
 }
 
 void AreaWidget::set_models(const std::vector<Robot *> &robots,
@@ -27,11 +34,6 @@ void AreaWidget::set_models(const std::vector<Robot *> &robots,
 void AreaWidget::setup_timer() {
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &AreaWidget::update_position);
-}
-
-void AreaWidget::add_wall() {
-    controller_->add_wall(new Wall(500, 200, 50, 500));
-    set_models(controller_->get_robots(), controller_->get_walls());
 }
 
 void AreaWidget::update_position() {
@@ -47,9 +49,31 @@ void AreaWidget::toggle_timer() {
     }
 }
 
+void AreaWidget::redraw() {
+    set_models(controller_->get_robots(), controller_->get_walls());
+}
+
+void AreaWidget::reset_robots() {
+    controller_->reset_color();
+    selected_robot = nullptr;
+    set_models(controller_->get_robots(), controller_->get_walls());
+}
+
 void AreaWidget::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_P) {
         emit pause();
+    } else if (event->key() == Qt::Key_E) {
+        selected_robot->rotate_staticly(true);
+        redraw();
+    } else if (event->key() == Qt::Key_Q) {
+        selected_robot->rotate_staticly(false);
+        redraw();
+    }
+}
+
+void AreaWidget::keyReleaseEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_R) {
+        rotation_mode = false;
     }
 }
 
@@ -59,6 +83,19 @@ void AreaWidget::mousePressEvent(QMouseEvent *event) {
     }
 
     const Vector2D position{event->pos()};
+
+    for (Robot *robot : robots) {
+        if (robot->contains(event->pos())) {
+            controller_->reset_color();
+            selected_robot = robot;
+            selected_robot->colorize(Entity::SelectedColor);
+            robot->start_moving(event->pos());
+            update();
+            return;
+        }
+    }
+
+    reset_robots();
 
     for (Wall *wall : walls) {
         const Edge edge = wall->is_near_edge(position);
@@ -79,13 +116,23 @@ void AreaWidget::mouseMoveEvent(QMouseEvent *event) {
         return;
     }
 
+    // TODO robot rotation
+
     const Vector2D position{event->pos()};
+
+    if (selected_robot) {
+        if (selected_robot->is_moving()) {
+            selected_robot->relocate(position);
+            set_models(controller_->get_robots(), controller_->get_walls());
+            return;
+        }
+    }
 
     for (Wall *wall : walls) {
         const Edge edge = wall->is_near_edge(position);
         if (edge == Edge::Left || edge == Edge::Right) {
             setCursor(Qt::SizeHorCursor);
-        } else if (edge == Edge::Top or edge == Edge::Bottom) {
+        } else if (edge == Edge::Top || edge == Edge::Bottom) {
             setCursor(Qt::SizeVerCursor);
         } else {
             setCursor(Qt::ArrowCursor);
@@ -96,7 +143,7 @@ void AreaWidget::mouseMoveEvent(QMouseEvent *event) {
         if (selected_wall->is_resizing()) {
             selected_wall->resize(position);
         } else {
-            selected_wall->move(position);
+            selected_wall->relocate(position);
         }
         set_models(controller_->get_robots(), controller_->get_walls());
     }
@@ -108,6 +155,15 @@ void AreaWidget::mouseReleaseEvent(QMouseEvent *event) {
         selected_wall->stop_resizing();
         selected_wall = nullptr;
     }
+    if (selected_robot) {
+        selected_robot->stop_moving();
+        // selected_robot = nullptr;
+    }
+}
+
+void AreaWidget::showEvent(QShowEvent *event) {
+    QWidget::showEvent(event);
+    update();
 }
 
 void AreaWidget::paintEvent(QPaintEvent *event) {
@@ -147,4 +203,8 @@ void AreaWidget::draw_walls(QPainter &painter) {
     }
 }
 
-void AreaWidget::draw_border(QPainter &painter) { painter.drawRect(rect()); }
+void AreaWidget::draw_border(QPainter &painter) {
+    QPen pen(Qt::black, 4, Qt::SolidLine);
+    painter.setPen(pen);
+    painter.drawRect(rect());
+}

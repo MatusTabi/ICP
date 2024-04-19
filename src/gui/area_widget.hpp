@@ -13,6 +13,7 @@ class AreaWidget : public QWidget {
     Q_OBJECT
   public:
     AreaWidget(QWidget *parent = nullptr);
+    ~AreaWidget();
     void set_models(const std::vector<Robot *> &robots,
                     const std::vector<Wall *> &walls);
 
@@ -21,12 +22,14 @@ class AreaWidget : public QWidget {
 
   public slots:
     void toggle_timer();
-    void add_wall();
+    void redraw();
 
   protected:
     void paintEvent(QPaintEvent *event) override;
+    void showEvent(QShowEvent *event) override;
 
     void keyPressEvent(QKeyEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
 
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -37,22 +40,22 @@ class AreaWidget : public QWidget {
 
   private:
     void setup_timer();
-    // void setup_connections();
+    void reset_robots();
 
     void draw_robots(QPainter &painter);
-    void draw_lines(QPainter &painter, const QPointF &r_position,
-                    const int &r_size, const int &r_direction);
     void draw_walls(QPainter &painter);
     void draw_border(QPainter &painter);
 
-    const int kTileSize{64};
     const int kInterval{17};
     std::vector<Robot *> robots;
     std::vector<Wall *> walls;
     QTimer *timer;
     Controller *controller_;
 
-    Wall *selected_wall;
+    bool rotation_mode{false};
+
+    Wall *selected_wall = nullptr;
+    Robot *selected_robot = nullptr;
 };
 
 #endif

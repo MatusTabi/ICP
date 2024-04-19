@@ -31,6 +31,18 @@ void TopToolBar::setup_connections() {
     connect(start_stop_action, &QAction::triggered, this,
             &TopToolBar::toggle_action_icon);
     connect(add_wall_action, &QAction::triggered, this, &TopToolBar::add_wall);
+    connect(add_robot_action, &QAction::triggered, this,
+            &TopToolBar::add_robot);
+}
+
+void TopToolBar::add_wall() {
+    controller_->add_wall(new Wall{100, 100, 100, 100});
+    emit redraw();
+}
+
+void TopToolBar::add_robot() {
+    controller_->add_robot(new Robot{Vector2D{300, 300}, Vector2D{2, 0}});
+    emit redraw();
 }
 
 void TopToolBar::toggle_action_icon() {

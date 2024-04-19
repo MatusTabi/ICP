@@ -11,10 +11,14 @@ class TopToolBar : public QToolBar {
 
   signals:
     void toggle_simulation();
-    void add_wall();
+    void redraw();
 
   public slots:
     void toggle_action_icon();
+
+  private slots:
+    void add_wall();
+    void add_robot();
 
   private:
     void setup_actions();

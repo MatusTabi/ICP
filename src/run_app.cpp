@@ -12,6 +12,6 @@ int main(int argc, char *argv[]) {
     
     std::cout << "Testing print text"
               << "\n";
-
+              
     return a.exec();
 }

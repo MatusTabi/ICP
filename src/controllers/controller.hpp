@@ -17,12 +17,15 @@ class Controller {
     void move_robots();
     void toggle_simulation_state();
     bool &is_simulation_running();
+    void reset_color();
 
     std::vector<Robot *> const get_robots();
     std::vector<Wall *> const get_walls();
 
   private:
     bool detect_collision(Robot *robot);
+    bool robot_collision(Robot *robot_1, Robot *robot_2);
+    void detect_robot_collision();
 
     std::vector<Robot *> robot_vector;
     std::vector<Wall *> wall_vector;

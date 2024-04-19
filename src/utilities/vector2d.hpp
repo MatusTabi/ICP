@@ -22,6 +22,8 @@ struct Vector2D {
     const Vector2D operator-(const Vector2D &vector2d) const;
     const Vector2D normalize();
     const double length();
+    const double dot(const Vector2D &other) const;
+    const double cross_product(const Vector2D &other) const;
 
     friend std::ostream &operator<<(std::ostream &os, const Vector2D &vector2d);
 };

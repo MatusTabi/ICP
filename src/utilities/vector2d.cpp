@@ -53,8 +53,14 @@ const Vector2D Vector2D::normalize() {
     return Vector2D{0, 0};
 }
 
-const double Vector2D::length() {
-    return std::sqrt(x_ * x_ + y_ * y_);
+const double Vector2D::length() { return std::sqrt(x_ * x_ + y_ * y_); }
+
+const double Vector2D::dot(const Vector2D &other) const {
+    return x_ * other.x_ + y_ * other.y_;
+}
+
+const double Vector2D::cross_product(const Vector2D &other) const {
+    return x_ * other.y_ - y_ * other.x_;
 }
 
 std::ostream &operator<<(std::ostream &os, const Vector2D &vector2d) {

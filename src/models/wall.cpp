@@ -21,7 +21,7 @@ bool Wall::contains(const Vector2D &point) {
 
 void Wall::start_moving(const Vector2D &point) {
     moving_ = true;
-    offset = calculate_moving_offset(point);
+    offset = calculate_relocate_offset(point);
 }
 
 void Wall::start_resizing(const Vector2D &point, const Edge &edge) {
@@ -64,9 +64,9 @@ Edge Wall::is_near_edge(const Vector2D &point) const {
     return Edge::None;
 }
 
-void Wall::move(const Vector2D &point) {
+void Wall::relocate(const Vector2D &point) {
     if (moving_) {
-        update_move_position(point);
+        update_relocate_position(point);
     }
 }
 
@@ -76,7 +76,7 @@ void Wall::resize(const Vector2D &point) {
     }
 }
 
-const Vector2D Wall::calculate_moving_offset(const Vector2D &point) {
+const Vector2D Wall::calculate_relocate_offset(const Vector2D &point) {
     return point - position;
 }
 
@@ -84,7 +84,7 @@ const Vector2D Wall::calculate_resizing_offset(const Vector2D &point) {
     return point - (position + size);
 }
 
-void Wall::update_move_position(const Vector2D &point) {
+void Wall::update_relocate_position(const Vector2D &point) {
     position = point - offset;
 }
 
