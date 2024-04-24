@@ -24,16 +24,18 @@ set(PROJECT_SOURCES
         src/gui/gui.hpp
         src/gui/area_widget.cpp
         src/gui/area_widget.hpp
-        src/gui/select_widget.cpp
-        src/gui/select_widget.hpp
         src/gui/top_tool_bar.hpp
         src/gui/top_tool_bar.cpp
-        src/gui/sidebar.hpp
-        src/gui/sidebar.cpp
+        src/gui/menu_bar.hpp
+        src/gui/menu_bar.cpp
         src/models/entity.cpp
         src/models/entity.hpp
         src/utilities/vector2d.cpp
         src/utilities/vector2d.hpp
+        src/services/saver.cpp
+        src/services/saver.hpp
+        src/services/loader.cpp
+        src/services/loader.hpp
         # src/services/robot_service.cpp
         # src/services/robot_service.h
 )

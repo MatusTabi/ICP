@@ -13,11 +13,12 @@ class Wall {
     Wall(double x, double y);
     Wall(double x, double y, double width, double height);
     Wall(Vector2D w_position);
+    Wall(Vector2D w_position, Vector2D w_size);
     ~Wall() = default;
 
-    const Vector2D &get_position();
-    const Vector2D &get_size();
-    const Qt::GlobalColor &get_color();
+    const Vector2D &position();
+    const Vector2D &size();
+    const Qt::GlobalColor &color();
 
     bool contains(const Vector2D &point);
     void start_moving(const Vector2D &point);
@@ -37,10 +38,10 @@ class Wall {
     void update_relocate_position(const Vector2D &point);
     void update_resize_position(const Vector2D &point);
 
-    Vector2D position;
-    Vector2D size;
+    Vector2D position_;
+    Vector2D size_;
     Vector2D offset;
-    Qt::GlobalColor color = Qt::black;
+    Qt::GlobalColor color_ = Qt::black;
     bool moving_ = false;
     bool resizing_ = false;
     Edge resizing_edge_;

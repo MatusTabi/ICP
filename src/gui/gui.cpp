@@ -35,9 +35,8 @@ void GUI::setup_ui() {
     top_tool_bar = new TopToolBar(tr("ToolBar"), this);
     addToolBar(top_tool_bar);
 
-    // QMenuBar *menu_bar = new QMenuBar(this);
-    // menu_bar->addMenu(tr("File"));
-    // setMenuBar(menu_bar);
+    menu_bar = new MenuBar(this);
+    setMenuBar(menu_bar);
 
     QWidget *central_widget = new QWidget(this);
     central_widget->setLayout(layout);
@@ -48,4 +47,5 @@ void GUI::setup_connections() {
     connect(top_tool_bar, &TopToolBar::toggle_simulation, area_widget, &AreaWidget::toggle_timer);
     connect(area_widget, &AreaWidget::pause, top_tool_bar, &TopToolBar::toggle_action_icon);
     connect(top_tool_bar, &TopToolBar::redraw, area_widget, &AreaWidget::redraw);
+    connect(menu_bar, &MenuBar::load_simulation, area_widget, &AreaWidget::redraw);
 }

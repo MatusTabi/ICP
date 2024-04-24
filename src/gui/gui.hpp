@@ -4,8 +4,7 @@
 #include "../controllers/controller.hpp"
 #include "top_tool_bar.hpp"
 #include "area_widget.hpp"
-#include "select_widget.hpp"
-#include "sidebar.hpp"
+#include "menu_bar.hpp"
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
@@ -20,14 +19,12 @@ class GUI : public QMainWindow {
     ~GUI();
 
   private:
-    // void setup_timer();
     void setup_ui();
     void setup_connections();
 
     Controller *controller_;
-    // QTimer *timer;
     AreaWidget *area_widget;
-    // SideBar *sidebar;
+    MenuBar *menu_bar;
     Ui::GUI *ui;
     TopToolBar *top_tool_bar;
 };

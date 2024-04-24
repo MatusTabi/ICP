@@ -10,17 +10,11 @@ AreaWidget::AreaWidget(QWidget *parent)
     : QWidget{parent}, controller_{Controller::get_instance()} {
     setFocusPolicy(Qt::StrongFocus);
     setMouseTracking(true);
-
-    set_models(controller_->get_robots(), controller_->get_walls());
-
+    redraw();
     setup_timer();
-    // setup_connections();
 }
 
 AreaWidget::~AreaWidget() {
-    // delete controller_;
-    delete selected_robot;
-    delete selected_wall;
     delete timer;
 }
 
@@ -28,7 +22,6 @@ void AreaWidget::set_models(const std::vector<Robot *> &robots,
                             const std::vector<Wall *> &walls) {
     this->robots = robots;
     this->walls = walls;
-    update();
 }
 
 void AreaWidget::setup_timer() {
@@ -38,7 +31,7 @@ void AreaWidget::setup_timer() {
 
 void AreaWidget::update_position() {
     controller_->move_robots();
-    set_models(controller_->get_robots(), controller_->get_walls());
+    redraw();
 }
 
 void AreaWidget::toggle_timer() {
@@ -51,12 +44,13 @@ void AreaWidget::toggle_timer() {
 
 void AreaWidget::redraw() {
     set_models(controller_->get_robots(), controller_->get_walls());
+    update();
 }
 
 void AreaWidget::reset_robots() {
     controller_->reset_color();
     selected_robot = nullptr;
-    set_models(controller_->get_robots(), controller_->get_walls());
+    redraw();
 }
 
 void AreaWidget::keyPressEvent(QKeyEvent *event) {
@@ -116,14 +110,12 @@ void AreaWidget::mouseMoveEvent(QMouseEvent *event) {
         return;
     }
 
-    // TODO robot rotation
-
     const Vector2D position{event->pos()};
 
     if (selected_robot) {
         if (selected_robot->is_moving()) {
             selected_robot->relocate(position);
-            set_models(controller_->get_robots(), controller_->get_walls());
+            redraw();
             return;
         }
     }
@@ -145,7 +137,7 @@ void AreaWidget::mouseMoveEvent(QMouseEvent *event) {
         } else {
             selected_wall->relocate(position);
         }
-        set_models(controller_->get_robots(), controller_->get_walls());
+        redraw();
     }
 }
 
@@ -157,7 +149,6 @@ void AreaWidget::mouseReleaseEvent(QMouseEvent *event) {
     }
     if (selected_robot) {
         selected_robot->stop_moving();
-        // selected_robot = nullptr;
     }
 }
 
@@ -195,10 +186,10 @@ void AreaWidget::draw_robots(QPainter &painter) {
 void AreaWidget::draw_walls(QPainter &painter) {
 
     for (const auto &wall : walls) {
-        const Vector2D w_position = wall->get_position();
-        const Vector2D w_size = wall->get_size();
+        const Vector2D w_position = wall->position();
+        const Vector2D w_size = wall->size();
 
-        painter.setPen(QPen(wall->get_color(), 4, Qt::SolidLine));
+        painter.setPen(QPen(wall->color(), 4, Qt::SolidLine));
         painter.drawRect(w_position.x_, w_position.y_, w_size.x_, w_size.y_);
     }
 }

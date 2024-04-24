@@ -14,10 +14,12 @@ Controller *Controller::get_instance() {
     return instance;
 }
 
-// TODO Implementing BoundingBox for robot.
-// TODO const BoundingBox robot_bb = robot->get_bounding_box();
-// TODO if (!wall->intersects(robot_bb))
-// TODO     continue;
+Controller::~Controller() {
+    if (saver) {
+        delete saver;
+    }
+}
+
 bool Controller::detect_collision(Robot *robot) {
     Vector2D potential_position{robot->get_position() + robot->velocity()};
     const double robot_width = robot->get_width();
@@ -25,8 +27,8 @@ bool Controller::detect_collision(Robot *robot) {
     const int collision_distance = robot->collision_distance();
 
     for (Wall *wall : wall_vector) {
-        const Vector2D wall_position = wall->get_position();
-        const Vector2D wall_size = wall->get_size();
+        const Vector2D wall_position = wall->position();
+        const Vector2D wall_size = wall->size();
         Vector2D nearest_point;
 
         const double effective_robot_width = -robot_width + collision_distance;
@@ -83,6 +85,32 @@ void Controller::add_robot_vector(std::vector<Robot *> new_robot_vector) {
 void Controller::add_wall_vector(std::vector<Wall *> new_wall_vector) {
     wall_vector.insert(std::end(wall_vector), std::begin(new_wall_vector),
                        std::end(new_wall_vector));
+}
+
+void Controller::set_saver() {
+    if (!saver) {
+        saver = new Saver();
+    }
+}
+
+void Controller::set_loader() {
+    if (!loader) {
+        loader = new Loader();
+    }
+}
+
+void Controller::save_simulation() {
+    set_saver();
+    saver->save_simulation(robot_vector, wall_vector);
+}
+
+void Controller::load_simulation() {
+    set_loader();
+    std::vector<Robot *> new_robot_vector;
+    std::vector<Wall *> new_wall_vector;
+    loader->load_simulation(new_robot_vector, new_wall_vector);
+    add_robot_vector(new_robot_vector);
+    add_wall_vector(new_wall_vector);
 }
 
 void Controller::move_robots() {
