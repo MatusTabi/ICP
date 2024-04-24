@@ -62,12 +62,15 @@ bool Controller::robot_collision(Robot *robot_1, Robot *robot_2) {
     // Calculate the relative velocity
     Vector2D relative_velocity = robot_1->velocity() - robot_2->velocity();
 
-    // Check if the dot product of the distance vector and relative velocity is negative
+    // Check if the dot product of the distance vector and relative velocity is
+    // negative
     if (distance.dot(relative_velocity) >= 0) {
-        return false; // Robots are moving away from each other or parallel, no collision
+        return false; // Robots are moving away from each other or parallel, no
+                      // collision
     }
 
-    // Check if the length of the distance vector is less than the sum of their radii
+    // Check if the length of the distance vector is less than the sum of their
+    // radii
     return distance.length() < radius_sum + robot_1->collision_distance();
 }
 
@@ -122,7 +125,8 @@ void Controller::move_robots() {
         } else {
             bool collision = false;
             for (size_t j = 0; j < robot_vector.size(); ++j) {
-                const Vector2D robot2_old_position = robot_vector[j]->get_position();
+                const Vector2D robot2_old_position =
+                    robot_vector[j]->get_position();
                 if (i == j) {
                     continue;
                 }
@@ -140,6 +144,91 @@ void Controller::move_robots() {
                 robot->colorize(Entity::CollisionColor);
             }
         }
+    }
+}
+
+bool Controller::select_robot(const Vector2D &click_position) {
+    for (Robot *robot : robot_vector) {
+        if (robot->contains(click_position)) {
+            reset_color();
+            selected_robot = robot;
+            selected_robot->colorize(Entity::SelectedColor);
+            robot->start_moving(click_position);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Controller::select_wall(const Vector2D &click_position) {
+    for (Wall *wall : wall_vector) {
+        const Edge edge = wall->is_near_edge(click_position);
+        if (edge != Edge::None) {
+            selected_wall = wall;
+            wall->start_resizing(click_position, edge);
+            return true;
+        } else if (wall->contains(click_position)) {
+            selected_wall = wall;
+            selected_wall->start_moving(click_position);
+            return true;
+        }
+    }
+    return false;
+}
+
+void Controller::reset_robots() {
+    reset_color();
+    selected_robot = nullptr;
+}
+
+void Controller::rotate_robot_staticly(bool clockwise) {
+    if (selected_robot) {
+        selected_robot->rotate_staticly(clockwise);
+    }
+}
+
+bool Controller::can_move_selected_robot(const Vector2D &new_position) {
+    if (selected_robot && selected_robot->is_moving()) {
+        selected_robot->relocate(new_position);
+        return true;
+    }
+    return false;
+}
+
+bool Controller::can_move_selected_wall(const Vector2D &new_position) {
+    if (selected_wall) {
+        if (selected_wall->is_resizing()) {
+            selected_wall->resize(new_position);
+        } else {
+            selected_wall->relocate(new_position);
+        }
+        return true;
+    }
+    return false;
+}
+
+const Qt::CursorShape
+Controller::get_cursor_shape(const Vector2D &click_position) {
+    for (Wall *wall : wall_vector) {
+        const Edge edge = wall->is_near_edge(click_position);
+        if (edge == Edge::Left || edge == Edge::Right) {
+            return Qt::SizeHorCursor;
+        }
+        if (edge == Edge::Top || edge == Edge::Bottom) {
+            return Qt::SizeVerCursor;
+        }
+    }
+    return Qt::ArrowCursor;
+}
+
+void Controller::deselect() {
+    if (selected_robot) {
+        selected_robot->stop_moving();
+    }
+    if (selected_wall) {
+        selected_wall->stop_moving();
+        selected_wall->stop_resizing();
+        selected_wall = nullptr;
     }
 }
 

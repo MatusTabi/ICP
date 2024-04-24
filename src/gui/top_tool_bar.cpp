@@ -9,29 +9,34 @@ TopToolBar::TopToolBar(const QString &title, QWidget *parent)
 }
 
 void TopToolBar::setup_actions() {
-    start_stop_action = new QAction{"Start stop simulation", this};
-    start_stop_action->setIcon(QIcon{"icons/play.png"});
-    addAction(start_stop_action);
+    start_stop_ = new QAction{"Start stop simulation", this};
+    start_stop_->setIcon(QIcon{"icons/play.png"});
+    addAction(start_stop_);
     setIconSize(QSize{32, 32});
 
     addSeparator();
 
-    add_wall_action = new QAction{"Add new wall", this};
-    add_wall_action->setIcon(QIcon{"icons/wall.png"});
-    addAction(add_wall_action);
+    wall_ = new QAction{"Add new wall", this};
+    wall_->setIcon(QIcon{"icons/wall.png"});
+    addAction(wall_);
     setIconSize(QSize{32, 32});
 
-    add_robot_action = new QAction{"Add new robot", this};
-    add_robot_action->setIcon(QIcon{"icons/robot.png"});
-    addAction(add_robot_action);
+    robot_ = new QAction{"Add automatic robot", this};
+    robot_->setIcon(QIcon{"icons/robot.png"});
+    addAction(robot_);
+    setIconSize(QSize{32, 32});
+
+    manual_robot_ = new QAction{"Add manual robot", this};
+    manual_robot_->setIcon(QIcon{"icons/manual_robot.png"});
+    addAction(manual_robot_);
     setIconSize(QSize{32, 32});
 }
 
 void TopToolBar::setup_connections() {
-    connect(start_stop_action, &QAction::triggered, this,
+    connect(start_stop_, &QAction::triggered, this,
             &TopToolBar::toggle_action_icon);
-    connect(add_wall_action, &QAction::triggered, this, &TopToolBar::add_wall);
-    connect(add_robot_action, &QAction::triggered, this,
+    connect(wall_, &QAction::triggered, this, &TopToolBar::add_wall);
+    connect(robot_, &QAction::triggered, this,
             &TopToolBar::add_robot);
 }
 
@@ -49,9 +54,9 @@ void TopToolBar::toggle_action_icon() {
     controller_->toggle_simulation_state();
 
     if (controller_->is_simulation_running()) {
-        start_stop_action->setIcon(QIcon{"icons/stop.png"});
+        start_stop_->setIcon(QIcon{"icons/stop.png"});
     } else {
-        start_stop_action->setIcon(QIcon{"icons/play.png"});
+        start_stop_->setIcon(QIcon{"icons/play.png"});
     }
     emit toggle_simulation();
 }

@@ -26,9 +26,10 @@ class TopToolBar : public QToolBar {
 
     Controller *controller_;
 
-    QAction *start_stop_action;
-    QAction *add_wall_action;
-    QAction *add_robot_action;
+    QAction *start_stop_;
+    QAction *wall_;
+    QAction *robot_;
+    QAction *manual_robot_;
 };
 
 #endif

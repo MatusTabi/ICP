@@ -25,7 +25,6 @@ class Entity {
 
     virtual const Vector2D get_middle_point() = 0;
 
-    void adjust_position(const int kTileSize);
     void rotation_on();
     void rotation_off();
     bool &is_rotating();

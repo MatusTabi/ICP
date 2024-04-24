@@ -29,7 +29,6 @@ class AreaWidget : public QWidget {
     void showEvent(QShowEvent *event) override;
 
     void keyPressEvent(QKeyEvent *event) override;
-    void keyReleaseEvent(QKeyEvent *event) override;
 
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -40,7 +39,6 @@ class AreaWidget : public QWidget {
 
   private:
     void setup_timer();
-    void reset_robots();
 
     void draw_robots(QPainter &painter);
     void draw_walls(QPainter &painter);
@@ -53,9 +51,6 @@ class AreaWidget : public QWidget {
     Controller *controller_;
 
     bool rotation_mode{false};
-
-    Wall *selected_wall = nullptr;
-    Robot *selected_robot = nullptr;
 };
 
 #endif

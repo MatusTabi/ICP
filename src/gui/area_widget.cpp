@@ -47,27 +47,15 @@ void AreaWidget::redraw() {
     update();
 }
 
-void AreaWidget::reset_robots() {
-    controller_->reset_color();
-    selected_robot = nullptr;
-    redraw();
-}
-
 void AreaWidget::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_P) {
         emit pause();
     } else if (event->key() == Qt::Key_E) {
-        selected_robot->rotate_staticly(true);
+        controller_->rotate_robot_staticly(true);
         redraw();
     } else if (event->key() == Qt::Key_Q) {
-        selected_robot->rotate_staticly(false);
+        controller_->rotate_robot_staticly(false);
         redraw();
-    }
-}
-
-void AreaWidget::keyReleaseEvent(QKeyEvent *event) {
-    if (event->key() == Qt::Key_R) {
-        rotation_mode = false;
     }
 }
 
@@ -75,33 +63,15 @@ void AreaWidget::mousePressEvent(QMouseEvent *event) {
     if (controller_->is_simulation_running()) {
         return;
     }
-
     const Vector2D position{event->pos()};
-
-    for (Robot *robot : robots) {
-        if (robot->contains(event->pos())) {
-            controller_->reset_color();
-            selected_robot = robot;
-            selected_robot->colorize(Entity::SelectedColor);
-            robot->start_moving(event->pos());
-            update();
-            return;
-        }
+    if (controller_->select_robot(position)) {
+        redraw();
+        return;
     }
-
-    reset_robots();
-
-    for (Wall *wall : walls) {
-        const Edge edge = wall->is_near_edge(position);
-        if (edge != Edge::None) {
-            selected_wall = wall;
-            wall->start_resizing(position, edge);
-            break;
-        } else if (wall->contains(position)) {
-            selected_wall = wall;
-            selected_wall->start_moving(position);
-            break;
-        }
+    controller_->reset_robots();
+    redraw();
+    if (controller_->select_wall(position)) {
+        redraw();
     }
 }
 
@@ -109,47 +79,19 @@ void AreaWidget::mouseMoveEvent(QMouseEvent *event) {
     if (controller_->is_simulation_running()) {
         return;
     }
-
     const Vector2D position{event->pos()};
-
-    if (selected_robot) {
-        if (selected_robot->is_moving()) {
-            selected_robot->relocate(position);
-            redraw();
-            return;
-        }
+    if (controller_->can_move_selected_robot(position)) {
+        redraw();
+        return;
     }
-
-    for (Wall *wall : walls) {
-        const Edge edge = wall->is_near_edge(position);
-        if (edge == Edge::Left || edge == Edge::Right) {
-            setCursor(Qt::SizeHorCursor);
-        } else if (edge == Edge::Top || edge == Edge::Bottom) {
-            setCursor(Qt::SizeVerCursor);
-        } else {
-            setCursor(Qt::ArrowCursor);
-        }
-    }
-
-    if (selected_wall) {
-        if (selected_wall->is_resizing()) {
-            selected_wall->resize(position);
-        } else {
-            selected_wall->relocate(position);
-        }
+    setCursor(controller_->get_cursor_shape(position));
+    if (controller_->can_move_selected_wall(position)) {
         redraw();
     }
 }
 
 void AreaWidget::mouseReleaseEvent(QMouseEvent *event) {
-    if (selected_wall) {
-        selected_wall->stop_moving();
-        selected_wall->stop_resizing();
-        selected_wall = nullptr;
-    }
-    if (selected_robot) {
-        selected_robot->stop_moving();
-    }
+    controller_->deselect();
 }
 
 void AreaWidget::showEvent(QShowEvent *event) {

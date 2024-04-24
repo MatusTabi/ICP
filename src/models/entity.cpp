@@ -21,8 +21,6 @@ Entity::Entity(Vector2D r_position, Vector2D r_velocity, int r_rotation_angle)
 
 Entity::~Entity() {}
 
-void Entity::adjust_position(const int kTileSize) { position *= kTileSize; }
-
 void Entity::rotation_on() { rotate_flag_ = true; }
 
 void Entity::rotation_off() { rotate_flag_ = false; }

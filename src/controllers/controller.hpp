@@ -26,7 +26,14 @@ class Controller {
     bool &is_simulation_running();
     void reset_color();
 
-    void rotate_staticly(bool clockwise);
+    bool select_robot(const Vector2D &click_position);
+    bool select_wall(const Vector2D &click_position);
+    void reset_robots();
+    void rotate_robot_staticly(bool clockwise);
+    bool can_move_selected_robot(const Vector2D &new_position);
+    bool can_move_selected_wall(const Vector2D &new_position);
+    const Qt::CursorShape get_cursor_shape(const Vector2D &click_position);
+    void deselect();
 
     std::vector<Robot *> const get_robots();
     std::vector<Wall *> const get_walls();
