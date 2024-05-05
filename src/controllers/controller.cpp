@@ -20,7 +20,7 @@ Controller::~Controller() {
     }
 }
 
-bool Controller::detect_collision(Robot *robot) {
+bool Controller::detect_collision(RobotBase *robot) {
     Vector2D potential_position{robot->get_position() + robot->velocity()};
     const double robot_width = robot->get_width();
     const Vector2D velocity = robot->velocity();
@@ -45,17 +45,20 @@ bool Controller::detect_collision(Robot *robot) {
         Vector2D distance = potential_position - nearest_point;
         double overlaps = robot_width - distance.length();
         if (overlaps > 0) {
-            potential_position =
-                potential_position + distance.normalize() * overlaps;
+            if (ManualRobot *manual_robot =
+                    dynamic_cast<ManualRobot *>(robot)) {
+                manual_robot->change_state(ManualRobotState::IDLE);
+                return true;
+            }
             robot->rotation_on();
             return true;
         }
     }
-    robot->set_position(potential_position);
+    robot->move();
     return false;
 }
 
-bool Controller::robot_collision(Robot *robot_1, Robot *robot_2) {
+bool Controller::robot_collision(RobotBase *robot_1, RobotBase *robot_2) {
     Vector2D distance = robot_1->get_position() - robot_2->get_position();
     double radius_sum = robot_1->get_width() / 2.0 + robot_2->get_width() / 2.0;
 
@@ -74,13 +77,19 @@ bool Controller::robot_collision(Robot *robot_1, Robot *robot_2) {
     return distance.length() < radius_sum + robot_1->collision_distance();
 }
 
-void Controller::add_robot(Robot *new_robot) {
+void Controller::add_robot(RobotBase *new_robot) {
+    if (ManualRobot *manual_robot = dynamic_cast<ManualRobot *>(new_robot)) {
+        if (has_manual_robot) {
+            return;
+        }
+        has_manual_robot = true;
+    }
     robot_vector.push_back(new_robot);
 }
 
 void Controller::add_wall(Wall *new_wall) { wall_vector.push_back(new_wall); }
 
-void Controller::add_robot_vector(std::vector<Robot *> new_robot_vector) {
+void Controller::add_robot_vector(std::vector<RobotBase *> new_robot_vector) {
     robot_vector.insert(std::end(robot_vector), std::begin(new_robot_vector),
                         std::end(new_robot_vector));
 }
@@ -109,7 +118,7 @@ void Controller::save_simulation() {
 
 void Controller::load_simulation() {
     set_loader();
-    std::vector<Robot *> new_robot_vector;
+    std::vector<RobotBase *> new_robot_vector;
     std::vector<Wall *> new_wall_vector;
     loader->load_simulation(new_robot_vector, new_wall_vector);
     add_robot_vector(new_robot_vector);
@@ -119,7 +128,7 @@ void Controller::load_simulation() {
 void Controller::move_robots() {
     for (size_t i = 0; i < robot_vector.size(); ++i) {
         const Vector2D old_position = robot_vector[i]->get_position();
-        Robot *robot = robot_vector[i];
+        RobotBase *robot = robot_vector[i];
         if (robot->is_rotating()) {
             robot->rotate();
         } else {
@@ -133,26 +142,32 @@ void Controller::move_robots() {
                 if (robot_collision(robot, robot_vector[j])) {
                     robot->set_position(old_position);
                     robot_vector[j]->set_position(robot2_old_position);
-                    robot->rotation_on();
+                    if (ManualRobot *manual_robot =
+                            dynamic_cast<ManualRobot *>(robot)) {
+                        manual_robot->change_state(ManualRobotState::IDLE);
+                    }
+                    else {
+                        robot->rotation_on();
+                    }
                     collision = true;
                     break;
                 }
             }
             if (!collision && !detect_collision(robot)) {
-                robot->colorize(Entity::DefaultColor);
+                robot->colorize(RobotBase::DefaultColor);
             } else {
-                robot->colorize(Entity::CollisionColor);
+                robot->colorize(RobotBase::CollisionColor);
             }
         }
     }
 }
 
 bool Controller::select_robot(const Vector2D &click_position) {
-    for (Robot *robot : robot_vector) {
+    for (RobotBase *robot : robot_vector) {
         if (robot->contains(click_position)) {
             reset_color();
-            selected_robot = robot;
-            selected_robot->colorize(Entity::SelectedColor);
+            selected_robot_ = robot;
+            selected_robot_->colorize(RobotBase::SelectedColor);
             robot->start_moving(click_position);
             return true;
         }
@@ -164,11 +179,15 @@ bool Controller::select_wall(const Vector2D &click_position) {
     for (Wall *wall : wall_vector) {
         const Edge edge = wall->is_near_edge(click_position);
         if (edge != Edge::None) {
+            reset_color();
             selected_wall = wall;
+            selected_wall->colorize(Wall::SelectedColor);
             wall->start_resizing(click_position, edge);
             return true;
         } else if (wall->contains(click_position)) {
+            reset_color();
             selected_wall = wall;
+            wall->colorize(Wall::SelectedColor);
             selected_wall->start_moving(click_position);
             return true;
         }
@@ -178,18 +197,18 @@ bool Controller::select_wall(const Vector2D &click_position) {
 
 void Controller::reset_robots() {
     reset_color();
-    selected_robot = nullptr;
+    selected_robot_ = nullptr;
 }
 
 void Controller::rotate_robot_staticly(bool clockwise) {
-    if (selected_robot) {
-        selected_robot->rotate_staticly(clockwise);
+    if (selected_robot_) {
+        selected_robot_->rotate_staticly(clockwise);
     }
 }
 
 bool Controller::can_move_selected_robot(const Vector2D &new_position) {
-    if (selected_robot && selected_robot->is_moving()) {
-        selected_robot->relocate(new_position);
+    if (selected_robot_ && selected_robot_->is_moving()) {
+        selected_robot_->relocate(new_position);
         return true;
     }
     return false;
@@ -221,14 +240,20 @@ Controller::get_cursor_shape(const Vector2D &click_position) {
     return Qt::ArrowCursor;
 }
 
-void Controller::deselect() {
-    if (selected_robot) {
-        selected_robot->stop_moving();
+void Controller::deselect_entities() {
+    if (selected_robot_) {
+        selected_robot_->stop_moving();
     }
     if (selected_wall) {
         selected_wall->stop_moving();
         selected_wall->stop_resizing();
         selected_wall = nullptr;
+    }
+}
+
+void Controller::deselect_robot() {
+    if (selected_robot_) {
+        selected_robot_ = nullptr;
     }
 }
 
@@ -239,11 +264,25 @@ void Controller::toggle_simulation_state() {
 bool &Controller::is_simulation_running() { return simulation_runs; }
 
 void Controller::reset_color() {
-    for (Robot *robot : robot_vector) {
-        robot->colorize(Entity::DefaultColor);
+    for (RobotBase *robot : robot_vector) {
+        robot->colorize(RobotBase::DefaultColor);
+    }
+    for (Wall *wall : wall_vector) {
+        wall->colorize(Wall::DefaultColor);
     }
 }
 
-std::vector<Robot *> const Controller::get_robots() { return robot_vector; }
+ManualRobot *Controller::manual_robot() {
+    for (RobotBase *robot : robot_vector) {
+        if (ManualRobot *manual_robot = dynamic_cast<ManualRobot *>(robot)) {
+            return manual_robot;
+        }
+    }
+    return nullptr;
+}
+
+std::vector<RobotBase *> const Controller::get_robots() { return robot_vector; }
 
 std::vector<Wall *> const Controller::get_walls() { return wall_vector; }
+
+RobotBase *Controller::selected_robot() { return selected_robot_; }

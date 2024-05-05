@@ -2,18 +2,18 @@
 
 #include <QAction>
 #include <QDir>
+#include <QDockWidget>
 #include <QHBoxLayout>
+#include <QMenuBar>
 #include <QTimer>
 #include <QToolBar>
-#include <QDockWidget>
-#include <QMenuBar>
 #include <QWidget>
 #include <iostream>
 
 GUI::GUI(QWidget *parent)
     : QMainWindow{parent}, controller_{Controller::get_instance()} {
 
-    setStyleSheet("background-color: #ddd8d3;");
+    setStyleSheet("background-color: #181825;");
     setWindowTitle(tr("2D Robot Simulator"));
 
     setup_ui();
@@ -22,7 +22,6 @@ GUI::GUI(QWidget *parent)
 
 GUI::~GUI() {
     delete area_widget;
-    delete top_tool_bar;
     delete controller_;
 }
 
@@ -31,9 +30,9 @@ void GUI::setup_ui() {
 
     QHBoxLayout *layout = new QHBoxLayout;
     layout->addWidget(area_widget);
-    
-    top_tool_bar = new TopToolBar(tr("ToolBar"), this);
-    addToolBar(top_tool_bar);
+
+    side_bar = new SideBar(this);
+    layout->addWidget(side_bar);
 
     menu_bar = new MenuBar(this);
     setMenuBar(menu_bar);
@@ -44,8 +43,13 @@ void GUI::setup_ui() {
 }
 
 void GUI::setup_connections() {
-    connect(top_tool_bar, &TopToolBar::toggle_simulation, area_widget, &AreaWidget::toggle_timer);
-    connect(area_widget, &AreaWidget::pause, top_tool_bar, &TopToolBar::toggle_action_icon);
-    connect(top_tool_bar, &TopToolBar::redraw, area_widget, &AreaWidget::redraw);
-    connect(menu_bar, &MenuBar::load_simulation, area_widget, &AreaWidget::redraw);
+    connect(side_bar, &SideBar::toggle_simulation, area_widget,
+            &AreaWidget::toggle_timer);
+    connect(side_bar, &SideBar::redraw, area_widget, &AreaWidget::redraw);
+    connect(menu_bar, &MenuBar::load_simulation, area_widget,
+            &AreaWidget::redraw);
+    connect(area_widget, &AreaWidget::show_robot_overview, side_bar,
+            &SideBar::show_robot_overview_slot);
+    connect(menu_bar, &MenuBar::redraw, area_widget, &AreaWidget::redraw);
+    connect(area_widget, &AreaWidget::stop, side_bar, &SideBar::stop_simulation);
 }

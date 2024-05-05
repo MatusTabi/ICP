@@ -59,10 +59,6 @@ const double Vector2D::dot(const Vector2D &other) const {
     return x_ * other.x_ + y_ * other.y_;
 }
 
-const double Vector2D::cross_product(const Vector2D &other) const {
-    return x_ * other.y_ - y_ * other.x_;
-}
-
 std::ostream &operator<<(std::ostream &os, const Vector2D &vector2d) {
     os << "Vector2D(" << vector2d.x_ << ", " << vector2d.y_ << ")";
     return os;

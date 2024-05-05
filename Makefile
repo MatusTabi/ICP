@@ -1,5 +1,7 @@
 BUILD_DIR := build
 CMAKE := cmake
+GPROF_FLAFS := -pg
+DEBUG_FLAGS := -g
 
 .PHONY: build
 build:
@@ -11,17 +13,13 @@ build:
 run:
 	./build/icp-robots
 
-.PHONY: tests
-tests:
-	cd tests && $(CMAKE) . && $(MAKE) && ./tests
-
-.PHONY: setui
-setui:
-	uic gui.ui -o ui_gui.h
-
 .PHONY: all
-all: setui build run
+all: build run
+
+.PHONY: doxygen
+doxygen:
+	mkdir -p doc && doxygen Doxyfile
 
 .PHONY: clean
 clean:
-	rm -rf $(BUILD_DIR) && cd tests/ && rm -rf CMakeFiles cmake_install.cmake CMakeCache.txt Makefile tests build-icp-robots-Desktop_Qt_6_6_2_MinGW_64_bit-Debug
+	rm -rf $(BUILD_DIR) html/ doc/

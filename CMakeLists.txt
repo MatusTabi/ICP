@@ -13,31 +13,37 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
-        src/run_app.cpp
-        src/models/robot.cpp
-        src/models/robot.hpp
+        src/runApp.cpp
+        src/models/robotBase.cpp
+        src/models/robotBase.hpp
+        src/models/automaticRobot.cpp
+        src/models/automaticRobot.hpp
+        src/models/manualRobot.cpp
+        src/models/manualRobot.hpp
         src/models/wall.cpp
         src/models/wall.hpp
         src/controllers/controller.cpp
         src/controllers/controller.hpp
         src/gui/gui.cpp
         src/gui/gui.hpp
-        src/gui/area_widget.cpp
-        src/gui/area_widget.hpp
-        src/gui/top_tool_bar.hpp
-        src/gui/top_tool_bar.cpp
-        src/gui/menu_bar.hpp
-        src/gui/menu_bar.cpp
-        src/models/entity.cpp
-        src/models/entity.hpp
+        src/gui/areaWidget.cpp
+        src/gui/areaWidget.hpp
+        src/gui/menuBar.hpp
+        src/gui/menuBar.cpp
+        src/gui/sideBar.hpp
+        src/gui/sideBar.cpp
+        src/gui/simulationControlWidget.hpp
+        src/gui/simulationControlWidget.cpp
+        src/gui/robotOverviewWidget.hpp
+        src/gui/robotOverviewWidget.cpp
+        src/models/robotBase.cpp
+        src/models/robotBase.hpp
         src/utilities/vector2d.cpp
         src/utilities/vector2d.hpp
         src/services/saver.cpp
         src/services/saver.hpp
         src/services/loader.cpp
         src/services/loader.hpp
-        # src/services/robot_service.cpp
-        # src/services/robot_service.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

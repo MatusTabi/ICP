@@ -1,21 +1,26 @@
 #include "wall.hpp"
 #include <iostream>
 
+const QColor Wall::DefaultColor = QColor(255, 255, 255);
+const QColor Wall::SelectedColor = QColor(173, 216, 255);
+const Vector2D Wall::DefaultPosition = Vector2D{200, 200};
+const Vector2D Wall::DefaultSize = Vector2D{50, 50};
+
 Wall::Wall(double x, double y) : position_{x, y} {}
 
 Wall::Wall(Vector2D w_position) : position_{w_position} {}
 
-Wall::Wall(double x, double y, double width, double height)
-    : position_{x, y}, size_{width, height} {}
-
 Wall::Wall(Vector2D w_position, Vector2D w_size)
     : position_{w_position}, size_{w_size} {}
+
+Wall::Wall(Vector2D w_position, Vector2D w_size, QColor color)
+    : position_{w_position}, size_{w_size}, color_{color} {}
 
 const Vector2D &Wall::position() { return position_; }
 
 const Vector2D &Wall::size() { return size_; }
 
-const Qt::GlobalColor &Wall::color() { return color_; }
+const QColor &Wall::color() { return color_; }
 
 bool Wall::contains(const Vector2D &point) {
     return point.x_ >= position_.x_ && point.x_ <= position_.x_ + size_.x_ &&
@@ -66,6 +71,8 @@ Edge Wall::is_near_edge(const Vector2D &point) const {
     }
     return Edge::None;
 }
+
+void Wall::colorize(const QColor &color) { color_ = color; }
 
 void Wall::relocate(const Vector2D &point) {
     if (moving_) {

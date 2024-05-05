@@ -9,9 +9,6 @@ int main(int argc, char *argv[]) {
 
     GUI main_window;
     main_window.showMaximized();
-    
-    std::cout << "Testing print text"
-              << "\n";
               
     return a.exec();
 }

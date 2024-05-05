@@ -4,7 +4,7 @@ Saver::Saver() {}
 
 Saver::~Saver() {}
 
-void Saver::save_simulation(std::vector<Robot *> robots,
+void Saver::save_simulation(std::vector<RobotBase *> robots,
                             std::vector<Wall *> walls) {
 
     QJsonArray robots_json;
@@ -32,7 +32,7 @@ void Saver::save_simulation(std::vector<Robot *> robots,
 }
 
 QString Saver::get_filename() {
-    return QFileDialog::getSaveFileName(nullptr, "Save Simulation", "./saved/",
+    return QFileDialog::getSaveFileName(nullptr, "Save Simulation", "./examples/",
                                         "JSON Files (*.json)");
 }
 
@@ -51,9 +51,12 @@ void Saver::check_file(QFile &file) {
     }
 }
 
-void Saver::save_robots(QJsonArray &robots_json, std::vector<Robot *> robots) {
-    for (Robot *robot : robots) {
+void Saver::save_robots(QJsonArray &robots_json,
+                        std::vector<RobotBase *> robots) {
+    for (RobotBase *robot : robots) {
         QJsonObject robot_obj;
+
+        robot_obj["type"] = robot->type();
 
         QJsonObject position;
         position["x"] = robot->get_position().x_;
@@ -66,7 +69,13 @@ void Saver::save_robots(QJsonArray &robots_json, std::vector<Robot *> robots) {
         robot_obj["velocity"] = velocity;
 
         robot_obj["angle"] = robot->rotation_angle();
-        robot_obj["color"] = robot->color();
+
+        QJsonObject color;
+        color["red"] = robot->color().red();
+        color["green"] = robot->color().green();
+        color["blue"] = robot->color().blue();
+        robot_obj["color"] = color;
+
         robots_json.append(robot_obj);
     }
 }
@@ -74,11 +83,23 @@ void Saver::save_robots(QJsonArray &robots_json, std::vector<Robot *> robots) {
 void Saver::save_walls(QJsonArray &walls_json, std::vector<Wall *> walls) {
     for (Wall *wall : walls) {
         QJsonObject wall_obj;
-        wall_obj["x"] = wall->position().x_;
-        wall_obj["y"] = wall->position().y_;
-        wall_obj["width"] = wall->size().x_;
-        wall_obj["height"] = wall->size().y_;
-        wall_obj["color"] = wall->color();
+
+        QJsonObject position;
+        position["x"] = wall->position().x_;
+        position["y"] = wall->position().y_;
+        wall_obj["position"] = position;
+
+        QJsonObject size;
+        size["width"] = wall->size().x_;
+        size["height"] = wall->size().y_;
+        wall_obj["size"] = size;
+
+        QJsonObject color;
+        color["red"] = wall->color().red();
+        color["green"] = wall->color().green();
+        color["blue"] = wall->color().blue();
+        wall_obj["color"] = color;
+
         walls_json.append(wall_obj);
     }
 }
