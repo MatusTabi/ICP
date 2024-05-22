@@ -20,6 +20,10 @@ all: build run
 doxygen:
 	mkdir -p doc && doxygen Doxyfile
 
+.PHONY: pack
+pack:
+	zip -r xtabim01 examples/ icons/ src/ CMakeLists.txt Makefile Doxyfile README.md navrh.pdf
+
 .PHONY: clean
 clean:
 	rm -rf $(BUILD_DIR) html/ doc/
